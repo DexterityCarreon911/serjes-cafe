@@ -58,14 +58,14 @@ export default function Dashboard({ data, session, chartKey }) {
   const s = totals(filteredSales());
 
   return (
-    <>
-      <div className="cards">
+    <div className="dashboard-page">
+      <div className="cards dashboard-metrics">
         <div className="card"><div className="metric-label">REVENUE</div><div className="metric">{money(s.revenue)}</div></div>
         <div className="card"><div className="metric-label">PROFIT</div><div className="metric good">{money(s.profit)}</div></div>
         <div className="card"><div className="metric-label">ORDERS</div><div className="metric">{s.orders}</div></div>
         <div className="card"><div className="metric-label">ITEMS SOLD</div><div className="metric">{s.items}</div></div>
       </div>
-      <div className="grid2">
+      <div className="grid2 dashboard-charts">
         <div className="panel chart-card">
           <div className="panel-head"><b>Sales Progress</b><span className="muted">Last 7 days</span></div>
           <div className="chart-wrap"><canvas ref={salesChartRef} id="salesChart"></canvas></div>
@@ -75,11 +75,11 @@ export default function Dashboard({ data, session, chartKey }) {
           <div className="chart-wrap"><canvas ref={flowChartRef} id="flowChart"></canvas></div>
         </div>
       </div>
-      <div className="panel">
+      <div className="panel dashboard-recent">
         <div className="panel-head"><b>Recent Purchases</b><span className="muted">Monitoring</span></div>
         <SalesTable rows={filteredSales().slice(-8).reverse()} data={data} session={session} commit={commit} />
       </div>
-    </>
+    </div>
   );
 }
 

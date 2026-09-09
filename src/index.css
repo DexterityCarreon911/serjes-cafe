@@ -109,6 +109,14 @@ th{color:#888;font-size:11px;text-transform:uppercase}
 .pos-search{margin-bottom:8px}
 .pos-empty{padding:16px 0;color:var(--muted);text-align:center;font-size:13px}
 
+/* Dashboard */
+.dashboard-page{min-width:0}
+.dashboard-charts{min-width:0}
+.dashboard-charts .panel{min-width:0}
+.dashboard-charts canvas{display:block;max-width:100%}
+.dashboard-recent{min-width:0}
+.dashboard-recent table{min-width:820px}
+
 /* Calendar */
 .calendar-day{cursor:pointer}
 .calendar-day.muted{color:#9b9b9b}
@@ -138,6 +146,12 @@ th{color:#888;font-size:11px;text-transform:uppercase}
   .actions .btn{flex:1 1 auto}
   .chart-card{height:300px}
   .chart-wrap{height:230px}
+  .dashboard-metrics .metric{font-size:24px}
+  .dashboard-charts .chart-card{height:280px}
+  .dashboard-charts .chart-wrap{height:210px}
+  .dashboard-recent{overflow:hidden}
+  .dashboard-recent .panel-head{align-items:center}
+  .dashboard-recent table{min-width:820px}
   .order-summary{position:static;padding:14px}
   .summary-item{align-items:flex-start;flex-wrap:wrap}
   .summary-item>div:last-child{width:100%;justify-content:space-between}
@@ -162,4 +176,7 @@ th{color:#888;font-size:11px;text-transform:uppercase}
   .qty-control button{width:42px}
   .qty-control input{flex:1;width:auto}
   .calendar-day{min-height:82px!important;padding:6px!important}
+  .dashboard-metrics{grid-template-columns:repeat(2,1fr)}
+  .dashboard-metrics .card{padding:14px}
+  .dashboard-metrics .metric{font-size:22px}
 }
