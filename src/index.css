@@ -180,7 +180,15 @@ th{color:#888;font-size:11px;text-transform:uppercase}
   .qty-control button{width:42px}
   .qty-control input{flex:1;width:auto}
   .calendar-day{min-height:82px!important;padding:6px!important}
-  .dashboard-metrics{grid-template-columns:repeat(2,1fr)}
-  .dashboard-metrics .card{padding:14px}
-  .dashboard-metrics .metric{font-size:22px}
+  .dashboard-metrics{grid-template-columns:repeat(2,1fr);gap:8px}
+  .dashboard-metrics .card{padding:10px 12px;border-radius:8px}
+  .dashboard-metrics .metric-label{font-size:10px}
+  .dashboard-metrics .metric{font-size:18px;margin-top:5px}
+  .dashboard-charts{gap:8px;margin-top:8px}
+  .dashboard-charts .panel{padding:10px}
+  .dashboard-charts .chart-card{height:220px}
+  .dashboard-charts .chart-wrap{height:155px;margin-top:4px}
+  .dashboard-charts .panel-head{margin-bottom:6px;font-size:12px}
+  .dashboard-recent{padding:10px;margin-top:8px}
+  .dashboard-recent .panel-head{margin-bottom:8px;font-size:12px}
 }
