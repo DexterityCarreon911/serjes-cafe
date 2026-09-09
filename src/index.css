@@ -32,6 +32,9 @@ input:focus,select:focus{border-color:#777}
 .role{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px}
 .nav button{display:block;width:100%;text-align:left;background:none;color:#aaa;border:0;border-radius:9px;padding:12px;margin:4px 0}
 .nav button.active,.nav button:hover{background:#1c1c1c;color:#fff}
+.dashboard-toggle{display:flex!important;align-items:center;justify-content:space-between;gap:10px}
+.dashboard-chevron{color:#888;font-size:18px;line-height:1;transform:rotate(0deg);transition:transform .18s ease,color .18s ease}
+.dashboard-chevron.open{transform:rotate(180deg);color:#fff}
 .nav-dropdown{padding-left:12px}
 .nav-dropdown button{font-size:12px;padding:10px 12px}
 .logout{position:absolute;bottom:24px;left:16px;right:16px;background:#151515;color:#fff;border:1px solid var(--line);padding:11px;border-radius:9px}
@@ -129,6 +132,7 @@ th{color:#888;font-size:11px;text-transform:uppercase}
   .logout{position:static;width:100%;margin:12px 0 0}
   .nav{display:flex;overflow-x:auto;gap:4px;padding-bottom:2px;scrollbar-width:thin}
   .nav-dropdown{display:flex;padding-left:0;gap:4px}
+  .dashboard-toggle{flex:0 0 auto!important}
   .nav button{white-space:nowrap;width:auto;flex:0 0 auto;margin:0;padding:10px 12px}
   .brand{padding:4px 8px 12px;font-size:20px}
   main{margin:0;width:100%;padding:16px 12px}

@@ -26,14 +26,16 @@ export default function AppLayout({ session, navItems, activePage, onNavigate, c
             <>
               <button
                 data-page="dashboard"
-                className={activePage === "dashboard" ? "active" : ""}
+                className={`dashboard-toggle ${activePage === "dashboard" ? "active" : ""}`}
                 aria-expanded={String(adminNavOpen)}
+                aria-controls="adminNavMenu"
                 onClick={() => {
                   setAdminNavOpen((o) => !o);
                   onNavigate("dashboard");
                 }}
               >
-                Dashboard
+                <span>Dashboard</span>
+                <span className={`dashboard-chevron ${adminNavOpen ? "open" : ""}`} aria-hidden="true">⌄</span>
               </button>
               <div className={adminNavOpen ? "" : "hidden"} id="adminNavMenu">
                 {navItems
