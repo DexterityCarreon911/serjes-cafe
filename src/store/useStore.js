@@ -1,4 +1,4 @@
-import { createContext, createElement, useContext, useEffect, useState } from "react";
+import { createContext, createElement, useContext, useEffect, useRef, useState } from "react";
 import { seed, menuCategories, defaultMenuProducts, purchaseOrderStatusOptions } from "./seed";
 import { supabase } from "../lib/supabase";
 
@@ -15,16 +15,18 @@ function money(n) {
   return "₱" + Number(n).toLocaleString("en-PH", { minimumFractionDigits: 2 });
 }
 
-function normalize(data) {
+function normalize(data, includeDefaultProducts = false) {
   if (!Array.isArray(data.products)) data.products = [];
-  const existingNames = new Set(data.products.map((p) => String(p.name || "").trim().toLowerCase()));
-  defaultMenuProducts.forEach((product) => {
-    const key = String(product.name || "").trim().toLowerCase();
-    if (!existingNames.has(key)) {
-      data.products.push({ ...product, id: Date.now() + Math.random() });
-      existingNames.add(key);
-    }
-  });
+  if (includeDefaultProducts) {
+    const existingNames = new Set(data.products.map((p) => String(p.name || "").trim().toLowerCase()));
+    defaultMenuProducts.forEach((product) => {
+      const key = String(product.name || "").trim().toLowerCase();
+      if (!existingNames.has(key)) {
+        data.products.push({ ...product, id: Date.now() + Math.random() });
+        existingNames.add(key);
+      }
+    });
+  }
   data.products.forEach((product) => {
     if (!menuCategories.includes(product.category))
       product.category = product.name === "Croissant" ? "Extras" : "Hot Coffee";
@@ -49,7 +51,7 @@ function load() {
   } catch (e) {
     console.warn("Failed to load data, using seed", e);
   }
-  return normalize(JSON.parse(JSON.stringify(seed)));
+  return normalize(JSON.parse(JSON.stringify(seed)), true);
 }
 
 function save(data) {
@@ -180,12 +182,13 @@ async function loadRemoteData() {
       status: order.status,
     })),
     calendarNotes: Object.fromEntries(calendarNotes.data.map((item) => [item.note_date, item.note])),
-  });
+  }, false);
 }
 
 function useStoreState() {
   const [data, setData] = useState(load);
   const [remoteReady, setRemoteReady] = useState(!supabase);
+  const syncQueue = useRef(Promise.resolve());
   const [session, setSession] = useState(() => {
     try {
       const s = localStorage.getItem(SESSION_KEY);
@@ -200,7 +203,9 @@ function useStoreState() {
     if (!remoteReady) return;
     save(data);
     if (supabase) {
-      replaceRemoteData(data).catch((error) => console.warn("Failed to sync Supabase data", error));
+      syncQueue.current = syncQueue.current
+        .then(() => replaceRemoteData(data))
+        .catch((error) => console.warn("Failed to sync Supabase data", error));
     }
   }, [data, remoteReady]);
 

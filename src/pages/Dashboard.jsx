@@ -125,11 +125,12 @@ function SalesTable({ rows, data, session, commit }) {
 
 function deleteSale(id, data, commit, session) {
   if (!window.confirm("Delete this sale record?")) return;
-  const sale = data.sales.find((s) => s.id === id);
-  const product = data.products.find((p) => p.name === sale.product);
-  if (product) product.stock += sale.qty;
   commit((d) => {
     const next = structuredClone(d);
+    const sale = next.sales.find((s) => s.id === id);
+    if (!sale) return next;
+    const product = next.products.find((p) => p.name === sale.product);
+    if (product) product.stock += sale.qty;
     next.sales = next.sales.filter((s) => s.id !== id);
     return next;
   });

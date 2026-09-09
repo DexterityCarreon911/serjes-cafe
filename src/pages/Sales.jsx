@@ -165,7 +165,7 @@ function SalesTable({ rows, data, session, commit }) {
         {rows.map((s) => (
           <tr key={s.id}>
             <td>#{s.id}</td><td>{s.date}</td><td>{s.time}</td><td>{s.staff}</td><td>{s.product}</td><td>{s.qty}</td><td>{s.paymentMethod || "Cash"}</td><td>{money(s.total)}</td><td className="good">{money(s.total - s.cost)}</td>
-            <td><button className="btn danger" onClick={() => { if (window.confirm("Delete this sale record?")) { const product = data.products.find((p) => p.name === s.product); if (product) product.stock += s.qty; commit((d) => { const next = structuredClone(d); next.sales = next.sales.filter((x) => x.id !== s.id); return next; }); } }}>Delete</button></td>
+            <td><button className="btn danger" onClick={() => { if (window.confirm("Delete this sale record?")) { commit((d) => { const next = structuredClone(d); const sale = next.sales.find((x) => x.id === s.id); if (!sale) return next; const product = next.products.find((p) => p.name === sale.product); if (product) product.stock += sale.qty; next.sales = next.sales.filter((x) => x.id !== s.id); return next; }); } }}>Delete</button></td>
           </tr>
         ))}
       </tbody>

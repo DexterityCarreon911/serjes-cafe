@@ -44,30 +44,28 @@ export default function PurchaseOrders({ data, session }) {
   }
 
   function updatePurchaseOrderStatus(id, status) {
-    const purchaseOrder = data.purchaseOrders.find((po) => po.id === id);
-    if (!purchaseOrder) return;
-    const product = data.products.find((item) => item.id === purchaseOrder.productId);
-    if (product) {
-      const wasReceived = purchaseOrder.status === "Received";
-      const willBeReceived = status === "Received";
-      if (!wasReceived && willBeReceived) product.stock += purchaseOrder.quantity;
-      if (wasReceived && !willBeReceived) product.stock = Math.max(0, product.stock - purchaseOrder.quantity);
-    }
     commit((d) => {
       const next = structuredClone(d);
       const po = next.purchaseOrders.find((x) => x.id === id);
-      if (po) po.status = status;
+      if (!po) return next;
+      const product = next.products.find((item) => item.id === po.productId);
+      const wasReceived = po.status === "Received";
+      const willBeReceived = status === "Received";
+      if (product && !wasReceived && willBeReceived) product.stock += po.quantity;
+      if (product && wasReceived && !willBeReceived) product.stock = Math.max(0, product.stock - po.quantity);
+      po.status = status;
       return next;
     });
   }
 
   function deletePurchaseOrder(id) {
     if (!window.confirm("Delete this purchase order?")) return;
-    const purchaseOrder = data.purchaseOrders.find((po) => po.id === id);
-    const product = data.products.find((item) => item.id === purchaseOrder.productId);
-    if (product && purchaseOrder.status === "Received") product.stock = Math.max(0, product.stock - purchaseOrder.quantity);
     commit((d) => {
       const next = structuredClone(d);
+      const purchaseOrder = next.purchaseOrders.find((po) => po.id === id);
+      if (!purchaseOrder) return next;
+      const product = next.products.find((item) => item.id === purchaseOrder.productId);
+      if (product && purchaseOrder.status === "Received") product.stock = Math.max(0, product.stock - purchaseOrder.quantity);
       next.purchaseOrders = next.purchaseOrders.filter((po) => po.id !== id);
       return next;
     });
