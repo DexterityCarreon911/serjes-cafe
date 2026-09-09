@@ -2,7 +2,7 @@
   --bg:#080808;--panel:#111;--panel2:#171717;--line:#292929;--text:#f5f5f5;
   --muted:#9b9b9b;--accent:#fff;--danger:#e66;--good:#7ee787;
 }
-*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
+*{box-sizing:border-box} html{overflow-x:hidden} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;overflow-x:hidden}
 button,input,select{font:inherit} button{cursor:pointer}
 .hidden{display:none!important}
 .product-preview{margin-top:8px;padding:10px 12px;border-radius:10px;background:#1a1a1a;border:1px solid var(--line);color:#f5f5f5;font-size:12px;line-height:1.5}
@@ -47,6 +47,7 @@ h1{font-size:27px;margin:0}
 .chart-card{height:340px}
 .chart-wrap{height:270px;margin-top:10px}
 table{width:100%;border-collapse:collapse}
+table{display:block;overflow-x:auto;white-space:nowrap}
 th,td{padding:13px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
 th{color:#888;font-size:11px;text-transform:uppercase}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:15px}
@@ -115,19 +116,50 @@ th{color:#888;font-size:11px;text-transform:uppercase}
 
 /* Responsive */
 @media(max-width:900px){
-  .sidebar{position:static;width:100%;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .sidebar{position:static;width:100%;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:14px 12px}
   .app{display:block}
-  .logout{position:static;margin:15px 0 0}
-  .nav{display:flex;overflow:auto}
-  .nav button{white-space:nowrap}
-  .brand{padding-bottom:12px}
-  main{margin:0;width:100%;padding:18px}
+  .logout{position:static;width:100%;margin:12px 0 0}
+  .nav{display:flex;overflow-x:auto;gap:4px;padding-bottom:2px;scrollbar-width:thin}
+  .nav-dropdown{display:flex;padding-left:0;gap:4px}
+  .nav button{white-space:nowrap;width:auto;flex:0 0 auto;margin:0;padding:10px 12px}
+  .brand{padding:4px 8px 12px;font-size:20px}
+  main{margin:0;width:100%;padding:16px 12px}
+  .topbar{align-items:flex-start;gap:12px;margin-bottom:18px}
+  h1{font-size:23px}
+  .topbar .badge{flex:0 0 auto}
   .cards{grid-template-columns:repeat(2,1fr)}
   .grid2{grid-template-columns:1fr}
   .formgrid{grid-template-columns:1fr}
   .pos-layout{grid-template-columns:1fr}
   .pos-category-items{grid-template-columns:1fr}
+  .panel{padding:14px;border-radius:10px}
+  .panel-head{align-items:flex-start;gap:10px;flex-wrap:wrap}
+  .actions{width:100%}
+  .actions .btn{flex:1 1 auto}
+  .chart-card{height:300px}
+  .chart-wrap{height:230px}
+  .order-summary{position:static;padding:14px}
+  .summary-item{align-items:flex-start;flex-wrap:wrap}
+  .summary-item>div:last-child{width:100%;justify-content:space-between}
+  .modal{padding:12px}
+  .modal-card{padding:16px;border-radius:10px}
 }
 @media(max-width:520px){
   .cards{grid-template-columns:1fr}
+  .login-card{padding:24px 18px;border-radius:14px}
+  .login-brand{margin-bottom:20px}
+  .logo{font-size:26px}
+  .topbar{flex-direction:column}
+  .topbar .badge{align-self:flex-start}
+  .btn{padding:10px 11px}
+  .formgrid{gap:8px}
+  .modal-actions{justify-content:stretch;flex-wrap:wrap}
+  .modal-actions .btn{flex:1 1 140px}
+  .pos-order-actions{flex-direction:column}
+  .pos-order-actions .btn{width:100%}
+  .product-header{flex-direction:column;gap:4px}
+  .qty-control{justify-content:space-between}
+  .qty-control button{width:42px}
+  .qty-control input{flex:1;width:auto}
+  .calendar-day{min-height:82px!important;padding:6px!important}
 }
