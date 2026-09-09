@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { createContext, createElement, useContext, useEffect, useState } from "react";
 import { seed, menuCategories, defaultMenuProducts, purchaseOrderStatusOptions } from "./seed";
 import { supabase } from "../lib/supabase";
 
 const STORAGE_KEY = "serjesData";
 const SESSION_KEY = "serjesSession";
 const ACTIVE_PAGE_KEY = "serjesActivePage";
+const StoreContext = createContext(null);
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -182,7 +183,7 @@ async function loadRemoteData() {
   });
 }
 
-export function useStore() {
+function useStoreState() {
   const [data, setData] = useState(load);
   const [remoteReady, setRemoteReady] = useState(!supabase);
   const [session, setSession] = useState(() => {
@@ -251,6 +252,17 @@ export function useStore() {
     today,
     money,
   };
+}
+
+export function StoreProvider({ children }) {
+  const store = useStoreState();
+  return createElement(StoreContext.Provider, { value: store }, children);
+}
+
+export function useStore() {
+  const store = useContext(StoreContext);
+  if (!store) throw new Error("useStore must be used inside StoreProvider");
+  return store;
 }
 
 export { today, money, menuCategories, purchaseOrderStatusOptions };
