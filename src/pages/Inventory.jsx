@@ -108,7 +108,7 @@ export default function Inventory({ data, session }) {
       ) : (
         <div className="good" style={{ padding: "12px 0" }}>Inventory levels are healthy.</div>
       )}
-      {["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras"].map((category) => {
+      {["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras", "Add-ons"].map((category) => {
         const items = filtered.filter((p) => p.category === category);
         return (
           <section className="menu-category" key={category}>

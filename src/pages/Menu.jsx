@@ -14,7 +14,7 @@ export default function Menu({ data, session }) {
         <div class="modal-head"><h2>${id ? "Edit Menu Item" : "Add Menu Item"}</h2><button class="icon-btn" aria-label="Close">×</button></div>
         <form class="formgrid">
           <div class="full"><label>Product name</label><input id="menuName" value="${p.name}" required></div>
-          <div><label>Category</label><select id="menuCategory">${["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras"].map(c => `<option value="${c}" ${p.category === c ? "selected" : ""}>${c}</option>`).join("")}</select></div>
+          <div><label>Category</label><select id="menuCategory">${["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras", "Add-ons"].map(c => `<option value="${c}" ${p.category === c ? "selected" : ""}>${c}</option>`).join("")}</select></div>
           <div><label>Selling price</label><input id="menuPrice" type="number" min="0" value="${p.price}" required></div>
           <div class="full modal-actions"><button type="button" class="btn dark">Cancel</button><button class="btn">Save Menu Item</button></div>
         </form>
@@ -102,7 +102,7 @@ export default function Menu({ data, session }) {
       <div style={{ marginBottom: 12 }}>
         <input id="menuSearch" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search menu..." />
       </div>
-      {["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras"].map((category) => {
+      {["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras", "Add-ons"].map((category) => {
         const items = filtered.filter((p) => p.category === category);
         return (
           <section className="menu-category" key={category}>

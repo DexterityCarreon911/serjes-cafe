@@ -38,6 +38,6 @@ export const seed = {
   ]
 };
 
-export const menuCategories = ["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras"];
+export const menuCategories = ["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras", "Add-ons"];
 
 export const defaultMenuProducts = seed.products.map((p) => ({ ...p }));
