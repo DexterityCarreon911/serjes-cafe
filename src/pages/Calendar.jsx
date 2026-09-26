@@ -1,16 +1,38 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useStore, today, money } from "../store/useStore";
 import { formatPeriodLabel, getCalendarPeriodDates, summarizeSales, calendarMonthGrid, calendarDateList } from "../store/useStore";
+import { Chart, registerables } from "chart.js";
 
-export default function Calendar({ data, session }) {
+Chart.register(...registerables);
+
+export default function Calendar({ data, session, chartKey }) {
   const { commit } = useStore();
   const [period, setPeriod] = useState("month");
   const [dateValue, setDateValue] = useState(today());
+  const flowChartRef = useRef(null);
 
   useEffect(() => {
     window.__setCalendarDate = (d) => setDateValue(d);
     return () => { window.__setCalendarDate = undefined; };
   }, []);
+
+  useEffect(() => {
+    const sales = session.role === "admin" ? data.sales : data.sales.filter((s) => s.staff === session.username);
+    const hours = ["08", "09", "10", "11", "12", "13", "14", "15", "16", "17"];
+    const hv = hours.map((h) => sales.filter((s) => s.time.startsWith(h)).reduce((a, s) => a + 1, 0));
+    if (flowChartRef.current) {
+      const ctx = flowChartRef.current.getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: { labels: hours.map((h) => h + ":00"), datasets: [{ label: "Orders", data: hv, backgroundColor: "#fff" }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: "#bbb" } } }, scales: { x: { ticks: { color: "#888" }, grid: { color: "#222" } }, y: { ticks: { color: "#888" }, grid: { color: "#222" }, beginAtZero: true } } },
+      });
+    }
+
+    return () => {
+      Chart.getChart(flowChartRef.current)?.destroy();
+    };
+  }, [data.sales, session.username, chartKey]);
 
   function handleSwitchPeriod(p) {
     setPeriod(p);
@@ -83,6 +105,10 @@ export default function Calendar({ data, session }) {
           </div>
           <div className="muted" style={{ marginTop: 12 }}>Selected period: {period.toUpperCase()} • Total entries: {rows.length}</div>
         </div>
+      </div>
+      <div className="panel chart-card">
+        <div className="panel-head"><b>Customer Flow by Hour</b></div>
+        <div className="chart-wrap"><canvas ref={flowChartRef} id="flowChart"></canvas></div>
       </div>
     </div>
   );

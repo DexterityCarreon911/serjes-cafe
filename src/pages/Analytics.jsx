@@ -6,7 +6,6 @@ Chart.register(...registerables);
 
 export default function Analytics({ data, session, chartKey }) {
   const salesChartRef = useRef(null);
-  const flowChartRef = useRef(null);
 
   useEffect(() => {
     const sales = session.role === "admin" ? data.sales : data.sales.filter((s) => s.staff === session.username);
@@ -27,20 +26,8 @@ export default function Analytics({ data, session, chartKey }) {
       });
     }
 
-    const hours = ["08", "09", "10", "11", "12", "13", "14", "15", "16", "17"];
-    const hv = hours.map((h) => sales.filter((s) => s.time.startsWith(h)).reduce((a, s) => a + 1, 0));
-    if (flowChartRef.current) {
-      const ctx = flowChartRef.current.getContext("2d");
-      new Chart(ctx, {
-        type: "bar",
-        data: { labels: hours.map((h) => h + ":00"), datasets: [{ label: "Orders", data: hv, backgroundColor: "#fff" }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: "#bbb" } } }, scales: { x: { ticks: { color: "#888" }, grid: { color: "#222" } }, y: { ticks: { color: "#888" }, grid: { color: "#222" }, beginAtZero: true } } },
-      });
-    }
-
     return () => {
       Chart.getChart(salesChartRef.current)?.destroy();
-      Chart.getChart(flowChartRef.current)?.destroy();
     };
   }, [data.sales, session.username, chartKey]);
 
@@ -58,15 +45,9 @@ export default function Analytics({ data, session, chartKey }) {
         <div className="card"><div className="metric-label">UNITS SOLD</div><div className="metric">{t.items}</div></div>
         <div className="card"><div className="metric-label">LOW STOCK ITEMS</div><div className="metric">{lowStock}</div></div>
       </div>
-      <div className="grid2">
-        <div className="panel chart-card">
-          <div className="panel-head"><b>Revenue vs Profit</b></div>
-          <div className="chart-wrap"><canvas ref={salesChartRef} id="salesChart"></canvas></div>
-        </div>
-        <div className="panel chart-card">
-          <div className="panel-head"><b>Customer Flow by Hour</b></div>
-          <div className="chart-wrap"><canvas ref={flowChartRef} id="flowChart"></canvas></div>
-        </div>
+      <div className="panel chart-card">
+        <div className="panel-head"><b>Revenue vs Profit</b></div>
+        <div className="chart-wrap"><canvas ref={salesChartRef} id="salesChart"></canvas></div>
       </div>
     </>
   );
