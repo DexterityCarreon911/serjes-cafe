@@ -1,5 +1,5 @@
 import { createContext, createElement, useContext, useEffect, useRef, useState } from "react";
-import { seed, menuCategories, defaultMenuProducts, purchaseOrderStatusOptions } from "./seed";
+import { seed, menuCategories, defaultMenuProducts } from "./seed";
 import { supabase } from "../lib/supabase";
 
 const STORAGE_KEY = "serjesData";
@@ -36,7 +36,6 @@ function normalize(data, includeDefaultProducts = false) {
     if (product.cost === undefined) product.cost = 0;
   });
   data.calendarNotes = data.calendarNotes || {};
-  data.purchaseOrders = Array.isArray(data.purchaseOrders) ? data.purchaseOrders : (seed.purchaseOrders || []);
   data.staff = data.staff || seed.staff;
   data.staff.forEach((s) => {
     if (!s.password) s.password = s.username === "admin" ? "admin123" : "staff123";
@@ -93,17 +92,6 @@ function toDatabaseRows(data) {
       total: sale.total,
       cost: sale.cost,
     })),
-    purchaseOrders: data.purchaseOrders.map((order) => ({
-      id: order.id,
-      product_id: order.productId,
-      product: order.product,
-      quantity: order.quantity,
-      unit_cost: order.unitCost,
-      total_cost: order.totalCost,
-      staff: order.staff,
-      order_date: order.date,
-      status: order.status,
-    })),
     calendarNotes: Object.entries(data.calendarNotes || {}).map(([noteDate, note]) => ({ note_date: noteDate, note })),
   };
 }
@@ -115,7 +103,6 @@ async function replaceRemoteData(data) {
     supabase.from("products").delete().neq("id", -1),
     supabase.from("staff").delete().neq("id", -1),
     supabase.from("sales").delete().neq("id", -1),
-    supabase.from("purchase_orders").delete().neq("id", -1),
     supabase.from("calendar_notes").delete().neq("note_date", "1900-01-01"),
   ];
   const deleted = await Promise.all(operations);
@@ -125,7 +112,6 @@ async function replaceRemoteData(data) {
     supabase.from("products").insert(rows.products),
     supabase.from("staff").insert(rows.staff),
     supabase.from("sales").insert(rows.sales),
-    supabase.from("purchase_orders").insert(rows.purchaseOrders),
     supabase.from("calendar_notes").insert(rows.calendarNotes),
   ]);
   const insertError = inserts.find((result) => result.error)?.error;
@@ -134,14 +120,13 @@ async function replaceRemoteData(data) {
 
 async function loadRemoteData() {
   if (!supabase) return null;
-  const [products, staff, sales, purchaseOrders, calendarNotes] = await Promise.all([
+  const [products, staff, sales, calendarNotes] = await Promise.all([
     supabase.from("products").select("*").order("id"),
     supabase.from("staff").select("*").order("id"),
     supabase.from("sales").select("*").order("id"),
-    supabase.from("purchase_orders").select("*").order("id"),
     supabase.from("calendar_notes").select("*").order("note_date"),
   ]);
-  const result = [products, staff, sales, purchaseOrders, calendarNotes];
+  const result = [products, staff, sales, calendarNotes];
   const error = result.find((item) => item.error)?.error;
   if (error) throw error;
   if (!products.data?.length || !staff.data?.length) return null;
@@ -169,17 +154,6 @@ async function loadRemoteData() {
       qty: sale.qty,
       total: Number(sale.total),
       cost: Number(sale.cost),
-    })),
-    purchaseOrders: purchaseOrders.data.map((order) => ({
-      id: order.id,
-      productId: order.product_id,
-      product: order.product,
-      quantity: order.quantity,
-      unitCost: Number(order.unit_cost),
-      totalCost: Number(order.total_cost),
-      staff: order.staff,
-      date: order.order_date,
-      status: order.status,
     })),
     calendarNotes: Object.fromEntries(calendarNotes.data.map((item) => [item.note_date, item.note])),
   }, false);
@@ -270,7 +244,7 @@ export function useStore() {
   return store;
 }
 
-export { today, money, menuCategories, purchaseOrderStatusOptions };
+export { today, money, menuCategories };
 
 // Calendar helpers (used by Calendar page)
 export function summarizeSales(rows) {

@@ -14,7 +14,7 @@ export default function Inventory({ data, session }) {
         <div class="modal-head"><h2>${id ? "Edit Inventory" : "Add Inventory"}</h2><button class="icon-btn" aria-label="Close">×</button></div>
         <form class="formgrid">
           <div class="full"><label>Product name</label><input id="productName" value="${p.name}" required></div>
-          <div><label>Category</label><select id="productCategory">${["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras"].map(c => `<option value="${c}" ${p.category === c ? "selected" : ""}>${c}</option>`).join("")}</select></div>
+          <div><label>Category</label><select id="productCategory">${["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras", "Add-ons"].map(c => `<option value="${c}" ${p.category === c ? "selected" : ""}>${c}</option>`).join("")}</select></div>
           <div><label>Selling price</label><input id="productPrice" type="number" min="0" value="${p.price}" required></div>
           <div><label>Unit cost</label><input id="productCost" type="number" min="0" value="${p.cost}" required></div>
           <div><label>Stock</label><input id="productStock" type="number" min="0" value="${p.stock}" required></div>

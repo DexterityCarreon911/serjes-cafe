@@ -9,19 +9,15 @@ import Menu from "./pages/Menu";
 import Staff from "./pages/Staff";
 import Calendar from "./pages/Calendar";
 import Analytics from "./pages/Analytics";
-import PurchaseOrders from "./pages/PurchaseOrders";
-import Records from "./pages/Records";
 
 const pages = {
   dashboard: Dashboard,
   sales: Sales,
   analytics: Analytics,
-  records: Records,
   menu: Menu,
   inventory: Inventory,
   staff: Staff,
   calendar: Calendar,
-  purchaseOrders: PurchaseOrders,
 };
 
 export default function App() {
@@ -43,12 +39,10 @@ export default function App() {
           ["dashboard", "Dashboard"],
           ["sales", "POS/Orders"],
           ["analytics", "Sales"],
-          ["records", "Liquidation"],
           ["menu", "Menu"],
           ["inventory", "Inventory"],
           ["staff", "Staff"],
           ["calendar", "Calendar"],
-          ["purchaseOrders", "Purchase Orders"],
         ]
       : [
           ["dashboard", "Dashboard"],

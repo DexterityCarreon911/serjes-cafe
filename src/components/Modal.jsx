@@ -93,32 +93,12 @@ export default function Modal() {
     closeModal();
   }
 
-  function addPurchaseOrder() {
-    const productId = Number(document.getElementById("poProduct")?.value || 0);
-    const qty = Number(document.getElementById("poQty")?.value || 1);
-    const status = document.getElementById("poStatus")?.value || "Pending";
-    const product = data.products.find((x) => x.id === productId);
-    if (!product) return;
-    const unitCost = Number(product.cost) || 0;
-    commit((d) => {
-      const next = structuredClone(d);
-      next.purchaseOrders.push({
-        id: Date.now(), productId: product.id, product: product.name, quantity: qty, unitCost, totalCost: unitCost * qty, staff: session.username, date: today(), status
-      });
-      const p = next.products.find((x) => x.id === productId);
-      if (p && (status === "Received" || status === "Approved")) p.stock += qty;
-      return next;
-    });
-    closeModal();
-  }
-
   if (!modal) return null;
 
   const isInventory = modal.title.includes("Inventory");
   const isMenu = modal.title.includes("Menu Item");
   const isStaff = modal.title === "Add Staff";
   const isOrder = modal.title === "Add Order";
-  const isPurchaseOrder = modal.title === "Create Purchase Order";
 
   const p = data.products.find((x) => x.id === modal.id) || { name: "", category: "Hot Coffee", price: "", cost: "", stock: "" };
 
@@ -128,7 +108,7 @@ export default function Modal() {
       <form onSubmit={(e) => { e.preventDefault(); saveProduct(modal.id); }}>
         <div className="formgrid">
           <div className="full"><label>Product name</label><input id="productName" defaultValue={p.name} required /></div>
-          <div><label>Category</label><select id="productCategory">{["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras"].map(c => <option key={c} value={c}>{c}</option>)}</select></div>
+          <div><label>Category</label><select id="productCategory">{["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras", "Add-ons"].map(c => <option key={c} value={c}>{c}</option>)}</select></div>
           <div><label>Selling price</label><input id="productPrice" type="number" min="0" defaultValue={p.price} required /></div>
           <div><label>Unit cost</label><input id="productCost" type="number" min="0" defaultValue={p.cost} required /></div>
           <div><label>Stock</label><input id="productStock" type="number" min="0" defaultValue={p.stock} required /></div>
@@ -171,24 +151,6 @@ export default function Modal() {
         </div>
       </form>
     );
-  } else if (isPurchaseOrder) {
-    const products = data.products.filter((x) => x.visibleInMenu !== false && x.name && x.category);
-    const defaultProduct = products[0] || data.products[0];
-    body = (
-      <form onSubmit={(e) => { e.preventDefault(); addPurchaseOrder(); }}>
-        <div className="formgrid">
-          <div><label>Product</label><select id="poProduct" defaultValue={defaultProduct?.id || ""}>{products.map((x) => <option key={x.id} value={x.id}>{x.name} — {money(x.price)}</option>)}</select></div>
-          <div><label>Quantity</label><input id="poQty" type="number" min="1" value="1" /></div>
-          <div><label>Unit Cost</label><input id="poUnitCost" type="number" min="0" value={defaultProduct?.cost || 0} readOnly /></div>
-          <div><label>Total Cost</label><input id="poTotalCost" type="number" min="0" value={defaultProduct?.cost || 0} readOnly /></div>
-          <div><label>Managed By</label><input value={session.username} readOnly /></div>
-          <div><label>Date</label><input value={today()} readOnly /></div>
-          <div><label>Status</label><select id="poStatus">{["Draft", "Pending", "Approved", "Received", "Cancelled"].map(s => <option key={s}>{s}</option>)}</select></div>
-          <div className="full modal-actions"><button type="button" className="btn dark" onClick={closeModal}>Cancel</button><button className="btn">Save Purchase Order</button></div>
-        </div>
-      </form>
-    );
-  }
 
   return (
     <div className="modal" onClick={(e) => e.target === e.currentTarget && closeModal()}>

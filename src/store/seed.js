@@ -29,11 +29,6 @@ export const seed = {
     { id: 1005, date: "2026-08-18", time: "13:40", staff: "staff1", product: "Cappuccino", qty: 2, total: 290, cost: 124 },
     { id: 1006, date: "2026-08-18", time: "15:05", staff: "staff2", product: "Americano", qty: 1, total: 110, cost: 45 }
   ],
-  purchaseOrders: [
-    { id: 5001, productId: 1, product: "Americano", quantity: 20, unitCost: 45, totalCost: 900, staff: "staff1", date: "2026-08-18", status: "Approved" },
-    { id: 5002, productId: 5, product: "Croissant", quantity: 10, unitCost: 38, totalCost: 380, staff: "staff2", date: "2026-08-18", status: "Pending" },
-    { id: 5003, productId: 3, product: "Cappuccino", quantity: 15, unitCost: 62, totalCost: 930, staff: "staff3", date: "2026-08-19", status: "Received" }
-  ],
   staff: [
     { id: 1, username: "admin", password: "admin123", role: "admin" },
     { id: 2, username: "staff1", password: "staff123", role: "staff" },
@@ -44,6 +39,5 @@ export const seed = {
 };
 
 export const menuCategories = ["Hot Coffee", "Iced Coffee", "Frappe", "Solo", "Rice Meal", "Extras"];
-export const purchaseOrderStatusOptions = ["Draft", "Pending", "Approved", "Received", "Cancelled"];
 
 export const defaultMenuProducts = seed.products.map((p) => ({ ...p }));
