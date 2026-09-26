@@ -1,0 +1,1777 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serjes Cafe — Management System</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root{
+        --bg:#080808;--panel:#111;--panel2:#171717;--line:#292929;--text:#f5f5f5;
+        --muted:#9b9b9b;--accent:#fff;--danger:#e66;--good:#7ee787;
+      }
+      *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
+      button,input,select{font:inherit} button{cursor:pointer}
+      .hidden{display:none!important}
+      .product-preview{margin-top:8px;padding:10px 12px;border-radius:10px;background:#1a1a1a;border:1px solid var(--line);color:#f5f5f5;font-size:12px;line-height:1.5}
+      #login{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(rgba(0,0,0,.58),rgba(0,0,0,.58)),url("background.jpg") center/cover no-repeat}
+      .login-card{width:min(430px,100%);background:#101010;border:1px solid var(--line);border-radius:22px;padding:38px;box-shadow:0 20px 80px #000}
+      .login-brand{text-align:center;margin-bottom:28px}.login-brand img{display:block;width:min(90px,100%);aspect-ratio:1;margin:0 auto 16px;object-fit:cover;border-radius:50%}.logo{font-size:30px;font-weight:800;letter-spacing:-1px}.sub{color:var(--muted);margin:8px 0 0}
+      label{display:block;font-size:12px;color:var(--muted);margin:16px 0 7px}
+      input,select{width:100%;background:#090909;color:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;outline:none}
+      input:focus,select:focus{border-color:#777}
+      .menu-category{margin-top:24px}.menu-category:first-of-type{margin-top:0}.menu-category h3{font-size:16px;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+      .primary{width:100%;background:#fff;color:#000;border:0;border-radius:10px;padding:13px;font-weight:700;margin-top:20px}
+      .password-wrap{position:relative}.password-wrap input{padding-right:78px}.password-toggle{position:absolute;right:8px;top:6px;background:none;color:#aaa;border:0;padding:7px;font-size:12px}.forgot-link{display:block;width:auto;margin:12px 0 0 auto;padding:0;background:none;color:#aaa;border:0;font-size:12px;text-decoration:underline;cursor:pointer}.forgot-link:hover{color:#fff}
+      .app{min-height:100vh;display:flex}
+      .sidebar{width:245px;border-right:1px solid var(--line);padding:24px 16px;position:fixed;height:100vh;background:#090909}
+      .brand{padding:8px 12px 28px;font-size:23px;font-weight:800}.role{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1.5px}
+      .nav button{display:block;width:100%;text-align:left;background:none;color:#aaa;border:0;border-radius:9px;padding:12px;margin:4px 0}
+      .nav button.active,.nav button:hover{background:#1c1c1c;color:#fff}
+      .nav-dropdown{padding-left:12px}.nav-dropdown button{font-size:12px;padding:10px 12px}
+      .logout{position:absolute;bottom:24px;left:16px;right:16px;background:#151515;color:#fff;border:1px solid var(--line);padding:11px;border-radius:9px}
+      main{margin-left:245px;width:calc(100% - 245px);padding:30px;max-width:1600px}
+      .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+      h1{font-size:27px;margin:0}.muted{color:var(--muted)}
+      .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+      .metric{font-size:28px;font-weight:800;margin-top:9px}.metric-label{font-size:12px;color:var(--muted)}
+      .grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:15px;margin-top:15px}.chart-card{height:340px}.chart-wrap{height:270px;margin-top:10px}
+      table{width:100%;border-collapse:collapse}th,td{padding:13px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{color:#888;font-size:11px;text-transform:uppercase}
+      .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:15px}.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+      .badge{display:inline-block;padding:4px 8px;border-radius:20px;background:#202020;color:#ddd;font-size:11px}.good{color:var(--good)}.danger{color:var(--danger)}
+      .actions{display:flex;gap:8px;flex-wrap:wrap}.btn{background:#fff;color:#000;border:0;border-radius:8px;padding:9px 13px;font-weight:700}.btn.dark{background:#222;color:#fff;border:1px solid #333}.btn.danger{background:#301616;color:#ff9a9a}
+      .formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.formgrid label{margin-top:0}.formgrid .full{grid-column:1/-1}
+      .modal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:grid;place-items:center;padding:20px;z-index:10}.modal-card{width:min(560px,100%);max-height:90vh;overflow:auto;background:#151515;border:1px solid #444;border-radius:14px;padding:22px;box-shadow:0 20px 80px #000}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.modal-head h2{margin:0;font-size:20px}.icon-btn{background:none;color:#fff;border:0;font-size:24px;line-height:1;padding:2px 7px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.modal-actions .btn{width:auto;margin:0}.table-actions{display:flex;gap:6px}.table-actions .btn{padding:6px 9px;font-size:11px}
+      .staff-only{display:none}
+      .staff-only{display:none}
+      .pos-layout{display:grid;grid-template-columns:1.5fr .9fr;gap:16px;margin-top:15px}.pos-category-group{margin-bottom:12px}.pos-category-header{margin:0 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);font-size:14px;font-weight:700;letter-spacing:.02em;color:#ddd}.pos-category-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pos-products{display:flex;flex-direction:column}.product-card{background:#0f0f0f;border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px}.product-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.product-name{font-size:14px;font-weight:700;margin:0;line-height:1.3}.product-category{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em}.product-price{font-size:16px;font-weight:800;color:#fff}.product-meta{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px}.stock-pill{display:inline-block;padding:3px 6px;border-radius:4px;font-size:10px;border:none;background:#1b1b1b;color:#aaa}.stock-pill.available{color:#b9f7c8;background:#142515}.stock-pill.low{color:#ffd8a8;background:#2a1d10}.stock-pill.out{color:#ffb7b7;background:#2a1717}.qty-control{display:flex;align-items:center;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#0b0b0b}.qty-control button{width:28px;height:32px;background:#1a1a1a;color:#fff;border:0;font-size:16px;padding:0}.qty-control input{width:36px;background:transparent;border:0;color:#fff;text-align:center;padding:0;height:32px;font-size:12px}.add-order-btn{width:100%;background:#fff;color:#000;border:0;border-radius:6px;padding:8px 10px;font-weight:700;font-size:13px}.add-order-btn:disabled{opacity:.45;cursor:not-allowed}.order-summary{background:#111;border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;position:sticky;top:20px}.summary-list{display:flex;flex-direction:column;gap:8px;max-height:420px;overflow:auto}.summary-item{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#0f0f0f;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px};border-radius:10px;padding:10px 12px}.summary-item strong{display:block;font-size:14px}.summary-qty{color:var(--muted);font-size:12px}.summary-total{font-weight:700}.summary-empty{padding:8px 0;color:var(--muted)}.summary-totals{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px}.totals-row{display:flex;justify-content:space-between;align-items:center}.totals-row.total{font-size:20px;font-weight:800}.pos-order-actions{display:flex;gap:8px;margin-top:8px}.pos-order-actions .btn{flex:1;padding:8px 10px;font-size:13px}.pos-search{margin-bottom:8px}.pos-empty{padding:16px 0;color:var(--muted);text-align:center;font-size:13px} @media(max-width:900px){.sidebar{position:static;width:100%;height:auto;border-right:0;border-bottom:1px solid var(--line)}.app{display:block}.logout{position:static;margin:15px 0 0}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap}.brand{padding-bottom:12px}main{margin:0;width:100%;padding:18px}.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.pos-layout{grid-template-columns:1fr}.pos-category-items{grid-template-columns:1fr}} @media(max-width:520px){.cards{grid-template-columns:1fr}}
+    </style>
+  </head>
+  <body>
+    <section id="login">
+      <div class="login-card">
+        <div class="login-brand">
+          <img src="logo.jpg" alt="Serjes Cafe logo" />
+          <div class="logo">SERJES CAFE</div>
+          <div class="sub">Minimal cafe sales & operations dashboard</div>
+        </div>
+        <form id="loginForm">
+          <label>Username</label
+          ><input id="username" required placeholder="Enter username" />
+          <label>Password</label>
+          <div class="password-wrap">
+            <input
+              id="password"
+              type="password"
+              required
+              placeholder="Enter password"
+            /><button
+              type="button"
+              class="password-toggle"
+              onclick="togglePassword('password', this)"
+            >
+              Show
+            </button>
+          </div>
+          <button type="button" class="forgot-link" onclick="forgotPassword()">
+            Forgot Password?
+          </button>
+          <button class="primary">Sign in</button>
+        </form>
+      </div>
+    </section>
+
+    <div id="app" class="app hidden">
+      <aside class="sidebar">
+        <div class="brand">
+          SERJES <span class="role" id="roleLabel"></span>
+        </div>
+        <nav class="nav" id="nav"></nav>
+        <button class="logout" onclick="logout()">Log out</button>
+      </aside>
+      <main>
+        <div class="topbar">
+          <div>
+            <h1 id="pageTitle">Dashboard</h1>
+            <div class="muted" id="dateLabel"></div>
+          </div>
+          <div class="badge" id="userLabel"></div>
+        </div>
+        <section id="content"></section>
+      </main>
+    </div>
+    <div id="modal" class="modal hidden" onclick="closeModal(event)">
+      <div class="modal-card" id="modalCard"></div>
+    </div>
+
+    <script>
+      const seed = {
+        products: [
+          {
+            id: 1,
+            name: "Americano",
+            category: "Hot Coffee",
+            price: 110,
+            cost: 45,
+            stock: 40,
+            visibleInMenu: true,
+          },
+          {
+            id: 2,
+            name: "Cafe Latte",
+            category: "Hot Coffee",
+            price: 140,
+            cost: 60,
+            stock: 32,
+            visibleInMenu: true,
+          },
+          {
+            id: 3,
+            name: "Cappuccino",
+            category: "Hot Coffee",
+            price: 145,
+            cost: 62,
+            stock: 28,
+            visibleInMenu: true,
+          },
+          {
+            id: 4,
+            name: "Mocha",
+            category: "Hot Coffee",
+            price: 155,
+            cost: 70,
+            stock: 25,
+            visibleInMenu: true,
+          },
+          {
+            id: 5,
+            name: "Espresso",
+            category: "Hot Coffee",
+            price: 100,
+            cost: 40,
+            stock: 35,
+            visibleInMenu: true,
+          },
+          {
+            id: 6,
+            name: "Iced Coffee",
+            category: "Iced Coffee",
+            price: 130,
+            cost: 55,
+            stock: 30,
+            visibleInMenu: true,
+          },
+          {
+            id: 7,
+            name: "Milk Tea",
+            category: "Iced Coffee",
+            price: 120,
+            cost: 50,
+            stock: 25,
+            visibleInMenu: true,
+          },
+          {
+            id: 8,
+            name: "Iced Latte",
+            category: "Iced Coffee",
+            price: 150,
+            cost: 65,
+            stock: 22,
+            visibleInMenu: true,
+          },
+          {
+            id: 9,
+            name: "Iced Mocha",
+            category: "Iced Coffee",
+            price: 160,
+            cost: 72,
+            stock: 20,
+            visibleInMenu: true,
+          },
+          {
+            id: 10,
+            name: "Coffee Frappe",
+            category: "Frappe",
+            price: 180,
+            cost: 85,
+            stock: 18,
+            visibleInMenu: true,
+          },
+          {
+            id: 11,
+            name: "Chocolate Frappe",
+            category: "Frappe",
+            price: 170,
+            cost: 80,
+            stock: 18,
+            visibleInMenu: true,
+          },
+          {
+            id: 12,
+            name: "Oreo Frappe",
+            category: "Frappe",
+            price: 190,
+            cost: 90,
+            stock: 16,
+            visibleInMenu: true,
+          },
+          {
+            id: 13,
+            name: "Solo",
+            category: "Solo",
+            price: 60,
+            cost: 25,
+            stock: 50,
+            visibleInMenu: true,
+          },
+          {
+            id: 14,
+            name: "Beef Solo",
+            category: "Solo",
+            price: 85,
+            cost: 35,
+            stock: 35,
+            visibleInMenu: true,
+          },
+          {
+            id: 15,
+            name: "Chicken Solo",
+            category: "Solo",
+            price: 80,
+            cost: 32,
+            stock: 38,
+            visibleInMenu: true,
+          },
+          {
+            id: 16,
+            name: "Rice Meal",
+            category: "Rice Meal",
+            price: 120,
+            cost: 45,
+            stock: 25,
+            visibleInMenu: false,
+          },
+          {
+            id: 17,
+            name: "Chicken Rice Meal",
+            category: "Rice Meal",
+            price: 150,
+            cost: 60,
+            stock: 20,
+            visibleInMenu: false,
+          },
+          {
+            id: 18,
+            name: "Pork Rice Meal",
+            category: "Rice Meal",
+            price: 160,
+            cost: 65,
+            stock: 18,
+            visibleInMenu: false,
+          },
+          {
+            id: 19,
+            name: "Croissant",
+            category: "Extras",
+            price: 95,
+            cost: 38,
+            stock: 20,
+            visibleInMenu: false,
+          },
+        ],
+        calendarNotes: {},
+        sales: [
+          {
+            id: 1001,
+            date: "2026-08-18",
+            time: "08:20",
+            staff: "staff1",
+            product: "Americano",
+            qty: 2,
+            total: 220,
+            cost: 90,
+          },
+          {
+            id: 1002,
+            date: "2026-08-18",
+            time: "09:10",
+            staff: "staff2",
+            product: "Cafe Latte",
+            qty: 1,
+            total: 140,
+            cost: 60,
+          },
+          {
+            id: 1003,
+            date: "2026-08-18",
+            time: "10:45",
+            staff: "staff3",
+            product: "Croissant",
+            qty: 2,
+            total: 190,
+            cost: 76,
+          },
+          {
+            id: 1004,
+            date: "2026-08-18",
+            time: "12:15",
+            staff: "staff4",
+            product: "Mocha",
+            qty: 1,
+            total: 155,
+            cost: 70,
+          },
+          {
+            id: 1005,
+            date: "2026-08-18",
+            time: "13:40",
+            staff: "staff1",
+            product: "Cappuccino",
+            qty: 2,
+            total: 290,
+            cost: 124,
+          },
+          {
+            id: 1006,
+            date: "2026-08-18",
+            time: "15:05",
+            staff: "staff2",
+            product: "Americano",
+            qty: 1,
+            total: 110,
+            cost: 45,
+          },
+        ],
+        purchaseOrders: [
+          {
+            id: 5001,
+            productId: 1,
+            product: "Americano",
+            quantity: 20,
+            unitCost: 45,
+            totalCost: 900,
+            staff: "staff1",
+            date: "2026-08-18",
+            status: "Approved",
+          },
+          {
+            id: 5002,
+            productId: 5,
+            product: "Croissant",
+            quantity: 10,
+            unitCost: 38,
+            totalCost: 380,
+            staff: "staff2",
+            date: "2026-08-18",
+            status: "Pending",
+          },
+          {
+            id: 5003,
+            productId: 3,
+            product: "Cappuccino",
+            quantity: 15,
+            unitCost: 62,
+            totalCost: 930,
+            staff: "staff3",
+            date: "2026-08-19",
+            status: "Received",
+          },
+        ],
+        staff: [
+          { id: 1, username: "admin", password: "admin123", role: "admin" },
+          { id: 2, username: "staff1", password: "staff123", role: "staff" },
+          { id: 3, username: "staff2", password: "staff123", role: "staff" },
+          { id: 4, username: "staff3", password: "staff123", role: "staff" },
+          { id: 5, username: "staff4", password: "staff123", role: "staff" },
+        ],
+      };
+      const menuCategories = [
+        "Hot Coffee",
+        "Iced Coffee",
+        "Frappe",
+        "Solo",
+        "Rice Meal",
+        "Extras",
+      ];
+      const purchaseOrderStatusOptions = [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Received",
+        "Cancelled",
+      ];
+      const defaultMenuProducts = [
+        {
+          id: 1,
+          name: "Americano",
+          category: "Hot Coffee",
+          price: 110,
+          cost: 45,
+          stock: 40,
+          visibleInMenu: true,
+        },
+        {
+          id: 2,
+          name: "Cafe Latte",
+          category: "Hot Coffee",
+          price: 140,
+          cost: 60,
+          stock: 32,
+          visibleInMenu: true,
+        },
+        {
+          id: 3,
+          name: "Cappuccino",
+          category: "Hot Coffee",
+          price: 145,
+          cost: 62,
+          stock: 28,
+          visibleInMenu: true,
+        },
+        {
+          id: 4,
+          name: "Mocha",
+          category: "Hot Coffee",
+          price: 155,
+          cost: 70,
+          stock: 25,
+          visibleInMenu: true,
+        },
+        {
+          id: 5,
+          name: "Espresso",
+          category: "Hot Coffee",
+          price: 100,
+          cost: 40,
+          stock: 35,
+          visibleInMenu: true,
+        },
+        {
+          id: 6,
+          name: "Iced Coffee",
+          category: "Iced Coffee",
+          price: 130,
+          cost: 55,
+          stock: 30,
+          visibleInMenu: true,
+        },
+        {
+          id: 7,
+          name: "Milk Tea",
+          category: "Iced Coffee",
+          price: 120,
+          cost: 50,
+          stock: 25,
+          visibleInMenu: true,
+        },
+        {
+          id: 8,
+          name: "Iced Latte",
+          category: "Iced Coffee",
+          price: 150,
+          cost: 65,
+          stock: 22,
+          visibleInMenu: true,
+        },
+        {
+          id: 9,
+          name: "Iced Mocha",
+          category: "Iced Coffee",
+          price: 160,
+          cost: 72,
+          stock: 20,
+          visibleInMenu: true,
+        },
+        {
+          id: 10,
+          name: "Coffee Frappe",
+          category: "Frappe",
+          price: 180,
+          cost: 85,
+          stock: 18,
+          visibleInMenu: true,
+        },
+        {
+          id: 11,
+          name: "Chocolate Frappe",
+          category: "Frappe",
+          price: 170,
+          cost: 80,
+          stock: 18,
+          visibleInMenu: true,
+        },
+        {
+          id: 12,
+          name: "Oreo Frappe",
+          category: "Frappe",
+          price: 190,
+          cost: 90,
+          stock: 16,
+          visibleInMenu: true,
+        },
+        {
+          id: 13,
+          name: "Solo",
+          category: "Solo",
+          price: 60,
+          cost: 25,
+          stock: 50,
+          visibleInMenu: true,
+        },
+        {
+          id: 14,
+          name: "Beef Solo",
+          category: "Solo",
+          price: 85,
+          cost: 35,
+          stock: 35,
+          visibleInMenu: true,
+        },
+        {
+          id: 15,
+          name: "Chicken Solo",
+          category: "Solo",
+          price: 80,
+          cost: 32,
+          stock: 38,
+          visibleInMenu: true,
+        },
+        {
+          id: 16,
+          name: "Rice Meal",
+          category: "Rice Meal",
+          price: 120,
+          cost: 45,
+          stock: 25,
+          visibleInMenu: false,
+        },
+        {
+          id: 17,
+          name: "Chicken Rice Meal",
+          category: "Rice Meal",
+          price: 150,
+          cost: 60,
+          stock: 20,
+          visibleInMenu: false,
+        },
+        {
+          id: 18,
+          name: "Pork Rice Meal",
+          category: "Rice Meal",
+          price: 160,
+          cost: 65,
+          stock: 18,
+          visibleInMenu: false,
+        },
+        {
+          id: 19,
+          name: "Croissant",
+          category: "Extras",
+          price: 95,
+          cost: 38,
+          stock: 20,
+          visibleInMenu: false,
+        },
+      ];
+      let data = JSON.parse(localStorage.getItem("serjesData")) || seed;
+      if (!Array.isArray(data.products)) data.products = [];
+      const existingNames = new Set(
+        data.products.map((product) =>
+          String(product.name || "")
+            .trim()
+            .toLowerCase(),
+        ),
+      );
+      defaultMenuProducts.forEach((product) => {
+        const key = String(product.name || "")
+          .trim()
+          .toLowerCase();
+        if (!existingNames.has(key)) {
+          data.products.push({ ...product, id: Date.now() + Math.random() });
+          existingNames.add(key);
+        }
+      });
+      data.products.forEach((product) => {
+        if (!menuCategories.includes(product.category))
+          product.category =
+            product.name === "Croissant" ? "Extras" : "Hot Coffee";
+        if (product.visibleInMenu === undefined) product.visibleInMenu = true;
+        if (product.inventoryManaged === undefined)
+          product.inventoryManaged = true;
+        if (product.stock === undefined) product.stock = 0;
+        if (product.cost === undefined) product.cost = 0;
+      });
+      data.calendarNotes = data.calendarNotes || {};
+      data.purchaseOrders = Array.isArray(data.purchaseOrders)
+        ? data.purchaseOrders
+        : seed.purchaseOrders || [];
+      data.staff = data.staff || seed.staff;
+      data.staff.forEach((staff) => {
+        if (!staff.password)
+          staff.password = staff.username === "admin" ? "admin123" : "staff123";
+      });
+      let session = null,
+        chart1 = null,
+        chart2 = null;
+      let selectedCalendarDate = today();
+      let selectedCalendarView = "month";
+
+      function initializeCalendarState() {
+        const now = new Date();
+        const currentDate = now.toISOString().slice(0, 10);
+        selectedCalendarDate = currentDate;
+        selectedCalendarView = "month";
+      }
+
+      function save() {
+        localStorage.setItem("serjesData", JSON.stringify(data));
+      }
+      function money(n) {
+        return (
+          "₱" + Number(n).toLocaleString("en-PH", { minimumFractionDigits: 2 })
+        );
+      }
+      function today() {
+        return new Date().toISOString().slice(0, 10);
+      }
+      function totals(sales = data.sales) {
+        let revenue = sales.reduce((a, s) => a + s.total, 0),
+          cost = sales.reduce((a, s) => a + s.cost, 0);
+        return {
+          revenue,
+          cost,
+          profit: revenue - cost,
+          orders: sales.length,
+          items: sales.reduce((a, s) => a + s.qty, 0),
+        };
+      }
+      function login() {
+        const u = username.value.trim(),
+          p = password.value.trim();
+        const account = data.staff.find(
+          (staff) => staff.username === u && staff.password === p,
+        );
+        if (account) {
+          session = { username: u, role: account.role };
+          localStorage.setItem("serjesSession", JSON.stringify(session));
+          showApp();
+        } else alert("Invalid login details.");
+      }
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        login();
+      });
+      function togglePassword(id, button) {
+        let field = document.getElementById(id),
+          visible = field.type === "text";
+        field.type = visible ? "password" : "text";
+        button.textContent = visible ? "Show" : "Hide";
+      }
+      function forgotPassword() {
+        const u = prompt("Enter your username:");
+        if (!u) return;
+        const account = data.staff.find((staff) => staff.username === u.trim());
+        if (!account) return alert("Username not found.");
+        const next = prompt("Enter a new password (at least 6 characters):");
+        if (!next || next.length < 6)
+          return alert("Password must be at least 6 characters.");
+        account.password = next;
+        save();
+        alert("Password updated. You can now sign in.");
+      }
+      function logout() {
+        localStorage.removeItem("serjesSession");
+        location.reload();
+      }
+      function showApp() {
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+        roleLabel.textContent = session.role;
+        userLabel.textContent = session.username.toUpperCase();
+        dateLabel.textContent = new Date().toLocaleDateString("en-PH", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+        const items =
+          session.role === "admin"
+            ? [
+                ["dashboard", "Dashboard"],
+                ["sales", "POS/Orders"],
+                ["analytics", "Sales"],
+                ["records", "Liquidation"],
+                ["menu", "Menu"],
+                ["inventory", "Inventory"],
+                ["staff", "Staff"],
+                ["calendar", "Calendar"],
+              ]
+            : [
+                ["dashboard", "Dashboard"],
+                ["sales", "POS/Orders"],
+                ["analytics", "Sales"],
+                ["menu", "Menu"],
+              ];
+        const savedPage = localStorage.getItem("serjesActivePage");
+        const activePage = items.some((item) => item[0] === savedPage)
+          ? savedPage
+          : "dashboard";
+        nav.innerHTML =
+          session.role === "admin" || session.role === "staff"
+            ? `<button data-page="dashboard" class="${activePage === "dashboard" ? "active" : ""}" aria-expanded="${activePage !== "dashboard"}" onclick="toggleAdminNav(this)">Dashboard</button><div id="adminNavMenu" class="nav-dropdown ${activePage === "dashboard" ? "hidden" : ""}">${items
+                .slice(1)
+                .map(
+                  (x) =>
+                    `<button data-page="${x[0]}" class="${activePage === x[0] ? "active" : ""}" onclick="go('${x[0]}',this)">${x[1]}</button>`,
+                )
+                .join("")}</div>`
+            : items
+                .map(
+                  (x) =>
+                    `<button data-page="${x[0]}" class="${activePage === x[0] ? "active" : ""}" onclick="go('${x[0]}',this)">${x[1]}</button>`,
+                )
+                .join("");
+        go(activePage, nav.querySelector(`[data-page="${activePage}"]`));
+      }
+      function toggleAdminNav(btn) {
+        const menu = document.getElementById("adminNavMenu");
+        const isHidden = menu.classList.toggle("hidden");
+        btn.setAttribute("aria-expanded", String(!isHidden));
+        go("dashboard", btn);
+      }
+      function go(page, btn) {
+        if (!btn) return;
+        document
+          .querySelectorAll(".nav button")
+          .forEach((x) => x.classList.remove("active"));
+        btn.classList.add("active");
+        localStorage.setItem("serjesActivePage", page);
+        pageTitle.textContent = btn.textContent;
+        content.innerHTML = views[page]();
+        if (page === "sales") {
+          setTimeout(() => {
+            renderPosCatalog();
+            renderOrderSummary();
+            const select = document.getElementById("saleProduct");
+            if (select) updateSelectedProductSummary(select);
+          }, 0);
+        }
+        draw(page);
+      }
+      function filteredSales() {
+        return session.role === "admin"
+          ? data.sales
+          : data.sales.filter((s) => s.staff === session.username);
+      }
+      function filteredPurchaseOrders() {
+        return Array.isArray(data.purchaseOrders)
+          ? data.purchaseOrders.slice().reverse()
+          : [];
+      }
+      function getMenuProductsForSelection() {
+        return data.products.filter(
+          (product) =>
+            product.visibleInMenu !== false && product.name && product.category,
+        );
+      }
+      function renderProductOptions(selectedId = null) {
+        return menuCategories
+          .map((category) => {
+            const items = getMenuProductsForSelection().filter(
+              (p) => p.category === category,
+            );
+            if (!items.length) return "";
+            return `<optgroup label="${category}">${items.map((p) => `<option value="${p.id}" ${selectedId !== null && Number(selectedId) === Number(p.id) ? "selected" : ""}>${p.name} — ${money(p.price)}</option>`).join("")}</optgroup>`;
+          })
+          .join("");
+      }
+      function renderPurchaseOrderProductOptions(selectedId = null) {
+        return menuCategories
+          .map((category) => {
+            const items = getMenuProductsForSelection().filter(
+              (p) => p.category === category,
+            );
+            if (!items.length) return "";
+            return `<optgroup label="${category}">${items.map((p) => `<option value="${p.id}" ${selectedId !== null && Number(selectedId) === Number(p.id) ? "selected" : ""}>${p.name} — ${money(p.price)}</option>`).join("")}</optgroup>`;
+          })
+          .join("");
+      }
+      function updateSelectedProductSummary(selectEl) {
+        const preview = selectEl
+          ?.closest("form")
+          ?.querySelector("[data-product-preview]");
+        if (!preview) return;
+        const product = data.products.find(
+          (p) => Number(p.id) === Number(selectEl.value),
+        );
+        if (!product) {
+          preview.innerHTML = '<span class="muted">No product selected</span>';
+          return;
+        }
+        preview.innerHTML = `<strong>${product.name}</strong> • ${product.category} • ${money(product.price)}`;
+      }
+      function updateSelectedPurchaseOrderSummary(selectEl) {
+        if (!selectEl) return;
+        const form = selectEl.closest("form");
+        if (!form) return;
+        const product = data.products.find(
+          (p) => Number(p.id) === Number(selectEl.value),
+        );
+        const qtyInput = form.querySelector("#poQty");
+        const unitCostInput = form.querySelector("#poUnitCost");
+        const totalCostInput = form.querySelector("#poTotalCost");
+        if (!product || !qtyInput || !unitCostInput || !totalCostInput) return;
+        const qty = Number(qtyInput.value) || 1;
+        const unitCost = Number(product.cost) || 0;
+        unitCostInput.value = unitCost;
+        totalCostInput.value = (unitCost * qty).toFixed(2);
+      }
+      let currentOrder = [];
+      function getVisibleMenuProducts() {
+        return data.products.filter(
+          (product) => product.visibleInMenu !== false,
+        );
+      }
+      function getOrderItem(productId) {
+        return currentOrder.find(
+          (item) => Number(item.productId) === Number(productId),
+        );
+      }
+      function adjustOrderQty(productId, change) {
+        const input = document.getElementById(`qty-${productId}`);
+        if (!input) return;
+        const current = Number(input.value) || 1;
+        const product = data.products.find(
+          (item) => Number(item.id) === Number(productId),
+        );
+        const max = product ? product.stock : 1;
+        const nextValue = Math.min(max, Math.max(1, current + change));
+        input.value = nextValue;
+      }
+      function addToOrder(productId) {
+        const product = data.products.find(
+          (item) => Number(item.id) === Number(productId),
+        );
+        if (!product) return alert("Please select a valid product.");
+        const input = document.getElementById(`qty-${productId}`);
+        const qty = Math.max(1, Number(input?.value || 1));
+        if (qty > product.stock)
+          return alert(
+            `Only ${product.stock} unit(s) of ${product.name} are available.`,
+          );
+        const existing = getOrderItem(productId);
+        if (existing) {
+          const totalQty = existing.qty + qty;
+          if (totalQty > product.stock)
+            return alert(
+              `You can only add ${product.stock - existing.qty} more unit(s) of ${product.name} to this order.`,
+            );
+          existing.qty = totalQty;
+        } else {
+          currentOrder.push({
+            productId: product.id,
+            name: product.name,
+            price: product.price,
+            qty,
+            stock: product.stock,
+          });
+        }
+        renderOrderSummary();
+      }
+      function removeFromOrder(productId) {
+        currentOrder = currentOrder.filter(
+          (item) => Number(item.productId) !== Number(productId),
+        );
+        renderOrderSummary();
+      }
+      function renderOrderSummary() {
+        const summary = document.getElementById("posOrderSummary");
+        const totalEl = document.getElementById("posOrderTotal");
+        const grandTotalEl = document.getElementById("posOrderGrandTotal");
+        if (!summary || !totalEl || !grandTotalEl) return;
+        const subtotal = currentOrder.reduce(
+          (sum, item) => sum + item.price * item.qty,
+          0,
+        );
+        if (!currentOrder.length) {
+          summary.innerHTML = `<div class="summary-empty">No items added yet. Select products from the menu to start the order.</div>`;
+          totalEl.textContent = money(0);
+          grandTotalEl.textContent = money(0);
+          return;
+        }
+        summary.innerHTML = currentOrder
+          .map(
+            (item) => `
+    <div class="summary-item">
+      <div>
+        <strong>${item.name}</strong>
+        <div class="summary-qty">Qty: ${item.qty}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="summary-total">${money(item.price * item.qty)}</span>
+        <button type="button" class="btn danger" onclick="removeFromOrder(${item.productId})">Remove</button>
+      </div>
+    </div>
+  `,
+          )
+          .join("");
+        totalEl.textContent = money(subtotal);
+        grandTotalEl.textContent = money(subtotal);
+      }
+      function renderPosCatalog(searchTerm = "") {
+        const search = (
+          searchTerm ||
+          document.getElementById("posSearch")?.value ||
+          ""
+        )
+          .trim()
+          .toLowerCase();
+        const groupedProducts = menuCategories
+          .map((category) => {
+            const items = getVisibleMenuProducts().filter((product) => {
+              const matchesProduct =
+                !search || product.name.toLowerCase().includes(search);
+              return product.category === category && matchesProduct;
+            });
+            return { category, items };
+          })
+          .filter((group) => group.items.length > 0);
+
+        const container = document.getElementById("posProductList");
+        if (!container) return "";
+
+        if (!groupedProducts.length) {
+          container.innerHTML = `<div class="pos-empty">No products match your search.</div>`;
+          return container.innerHTML;
+        }
+
+        const catalogMarkup = groupedProducts
+          .map(
+            ({ category, items }) => `
+    <section class="pos-category-group">
+      <h3 class="pos-category-header">${category}</h3>
+      <div class="pos-category-items">
+        ${items
+          .map((product) => {
+            const stockStatus =
+              product.stock <= 0
+                ? "out"
+                : product.stock <= 5
+                  ? "low"
+                  : "available";
+            const addDisabled = product.stock <= 0 ? "disabled" : "";
+            return `
+            <div class="product-card">
+              <h3 class="product-name">${product.name}</h3>
+              <div class="product-price">${money(product.price)}</div>
+              <span class="stock-pill ${stockStatus}">${product.stock} ${product.stock === 1 ? "unit" : "units"}</span>
+              <div class="qty-control">
+                <button type="button" onclick="adjustOrderQty(${product.id}, -1)">−</button>
+                <input id="qty-${product.id}" type="number" min="1" max="${product.stock}" value="1" ${product.stock <= 0 ? "disabled" : ""}>
+                <button type="button" onclick="adjustOrderQty(${product.id}, 1)">+</button>
+              </div>
+              <button type="button" class="add-order-btn" onclick="addToOrder(${product.id})" ${addDisabled}>Add</button>
+            </div>
+          `;
+          })
+          .join("")}
+      </div>
+    </section>
+  `,
+          )
+          .join("");
+
+        container.innerHTML = catalogMarkup;
+        return catalogMarkup;
+      }
+      function completeOrder() {
+        if (!currentOrder.length)
+          return alert("Add at least one item before completing the order.");
+        const paymentMethod =
+          document.getElementById("posPaymentMethod")?.value || "Cash";
+        const customer = (
+          document.getElementById("posCustomer")?.value || ""
+        ).trim();
+        const orderId = `ORD-${Date.now()}`;
+        const orderTotal = currentOrder.reduce(
+          (sum, item) => sum + item.price * item.qty,
+          0,
+        );
+        let itemsAdded = 0;
+        for (const item of currentOrder) {
+          const product = data.products.find(
+            (product) => Number(product.id) === Number(item.productId),
+          );
+          if (!product)
+            return alert(`${item.name} is no longer available in the system.`);
+          if (item.qty > product.stock)
+            return alert(
+              `Not enough stock for ${product.name}. Available: ${product.stock}`,
+            );
+          const now = new Date();
+          data.sales.push({
+            id: Date.now() + itemsAdded + 1,
+            orderId,
+            customer,
+            paymentMethod,
+            date: today(),
+            time: now.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            staff: session.username,
+            product: product.name,
+            qty: item.qty,
+            total: product.price * item.qty,
+            cost: (product.cost || 0) * item.qty,
+          });
+          product.stock -= item.qty;
+          itemsAdded += 1;
+        }
+        save();
+        currentOrder = [];
+        renderOrderSummary();
+        renderPosCatalog();
+        const customerField = document.getElementById("posCustomer");
+        if (customerField) customerField.value = "";
+        alert(
+          `Order ${orderId} completed successfully. Total: ${money(orderTotal)}`,
+        );
+      }
+      const views = {
+        dashboard: () => {
+          let s = totals(filteredSales());
+          return `<div class="cards">
+ <div class="card"><div class="metric-label">REVENUE</div><div class="metric">${money(s.revenue)}</div></div>
+ <div class="card"><div class="metric-label">PROFIT</div><div class="metric good">${money(s.profit)}</div></div>
+ <div class="card"><div class="metric-label">ORDERS</div><div class="metric">${s.orders}</div></div>
+ <div class="card"><div class="metric-label">ITEMS SOLD</div><div class="metric">${s.items}</div></div>
+ </div><div class="grid2"><div class="panel chart-card"><div class="panel-head"><b>Sales Progress</b><span class="muted">Last 7 days</span></div><div class="chart-wrap"><canvas id="salesChart"></canvas></div></div>
+ <div class="panel chart-card"><div class="panel-head"><b>Customer Flow</b></div><div class="chart-wrap"><canvas id="flowChart"></canvas></div></div></div>
+ <div class="panel"><div class="panel-head"><b>Recent Purchases</b><span class="muted">Monitoring</span></div>${salesTable(filteredSales().slice(-8).reverse())}</div>`;
+        },
+        sales:
+          () => `<div class="panel"><div class="panel-head"><b>${session.role === "admin" ? "POS / Order Entry" : "POS / Order Entry"}</b></div>
+ <div class="pos-layout">
+   <div>
+    <div class="pos-search"><input id="posSearch" placeholder="Search by product or category: Hot Coffee, Iced Coffee, Frappe, Solo, Rice Meal" oninput="renderPosCatalog()"></div>
+     <div id="posProductList" class="pos-products"></div>
+   </div>
+   <aside class="order-summary">
+     <div class="panel-head" style="margin:0"><b>Current Order</b><button class="btn dark" type="button" onclick="currentOrder=[];renderOrderSummary();">Clear</button></div>
+     <div>
+       <label>Customer</label>
+       <input id="posCustomer" placeholder="Optional customer name">
+     </div>
+     <div>
+       <label>Payment Method</label>
+       <select id="posPaymentMethod"><option value="Cash">Cash</option><option value="GCash">GCash</option><option value="Card">Card</option></select>
+     </div>
+     <div id="posOrderSummary" class="summary-list">${currentOrder.length ? "" : '<div class="summary-empty">No items added yet. Select products from the menu to start the order.</div>'}</div>
+     <div class="summary-totals">
+       <div class="totals-row"><span>Subtotal</span><span id="posOrderTotal">${money(currentOrder.reduce((sum, item) => sum + item.price * item.qty, 0))}</span></div>
+       <div class="totals-row total"><span>Total</span><span id="posOrderGrandTotal">${money(currentOrder.reduce((sum, item) => sum + item.price * item.qty, 0))}</span></div>
+     </div>
+     <div class="pos-order-actions">
+       <button class="btn dark" type="button" onclick="currentOrder=[];renderOrderSummary();">Cancel</button>
+       <button class="btn" type="button" onclick="completeOrder()">Complete Order</button>
+     </div>
+   </aside>
+ </div>
+</div>
+<div class="panel"><div class="panel-head"><b>Purchase Monitoring</b></div>${salesTable(filteredSales().slice().reverse())}</div>`,
+        purchaseOrders:
+          () => `<div class="panel"><div class="panel-head"><b>Purchase Orders</b><button class="btn" onclick="openPurchaseOrderModal()">Create Purchase Order</button></div>
+ <form onsubmit="addPurchaseOrder(event)" class="formgrid"><div><label>Product</label><select id="poProduct" onchange="updateSelectedPurchaseOrderSummary(this)">${renderPurchaseOrderProductOptions()}</select></div><div><label>Quantity</label><input id="poQty" type="number" min="1" value="1" onchange="updateSelectedPurchaseOrderSummary(document.getElementById('poProduct'))"></div><div><label>Unit Cost</label><input id="poUnitCost" type="number" min="0" value="${data.products[0]?.cost || 0}" readonly></div><div><label>Total Cost</label><input id="poTotalCost" type="number" min="0" value="${data.products[0]?.cost || 0}" readonly></div><div><label>Managed By</label><input value="${session.username}" readonly></div><div><label>Date</label><input id="poDate" value="${today()}" readonly></div><div><label>Status</label><select id="poStatus">${purchaseOrderStatusOptions.map((status) => `<option value="${status}">${status}</option>`).join("")}</select></div><div class="full"><button class="btn">Save Purchase Order</button></div></form></div>
+ <div class="panel"><div class="panel-head"><b>Recorded Purchase Orders</b></div>${purchaseOrderTable(filteredPurchaseOrders())}</div>`,
+        inventory: () => {
+          let search =
+            (document.getElementById("inventorySearch") || {}).value || "";
+          let filtered = data.products.filter(
+            (p) =>
+              p.inventoryManaged !== false &&
+              (!search ||
+                [p.name, p.category]
+                  .join(" ")
+                  .toLowerCase()
+                  .includes(search.toLowerCase())),
+          );
+          let low = filtered.filter((p) => p.stock > 0 && p.stock <= 5),
+            out = filtered.filter((p) => p.stock <= 0);
+          return `<div class="panel"><div class="panel-head"><b>Inventory</b><div class="actions"><button class="btn" onclick="openInventoryModal()">Add Inventory</button><button class="btn danger" onclick="deleteAllProducts()">Delete All Items</button><button class="btn dark" onclick="undoAllRemovedItems()">Undo All Removed Items</button></div></div><div style="margin-bottom:12px"><input id="inventorySearch" value="${search}" oninput="go('inventory',document.querySelector('[data-page=\"inventory\"]'))" placeholder="Search inventory..." /></div>${low.length || out.length ? `<div class="danger" style="padding:12px 0">Inventory warning: ${out.length ? `${out.length} item${out.length === 1 ? "" : "s"} out of stock` : ""}${out.length && low.length ? "; " : ""}${low.length ? `${low.length} item${low.length === 1 ? "" : "s"} low in stock` : ""}. Restock before accepting orders.</div>` : `<div class="good" style="padding:12px 0">Inventory levels are healthy.</div>`}${menuCategories
+            .map((category) => {
+              let items = filtered.filter((p) => p.category === category);
+              return `<section class="menu-category"><h3>${category}</h3>${items.length ? `<table><tr><th>Product</th><th>Price</th><th>Unit Cost</th><th>Stock</th><th>Status</th><th>Actions</th></tr>${items.map((p) => `<tr><td>${p.name}</td><td>${money(p.price)}</td><td>${money(p.cost)}</td><td>${p.stock}</td><td><span class="${p.stock <= 0 || p.stock <= 5 ? "danger" : "good"}">${p.stock <= 0 ? "Out of Stock" : p.stock <= 5 ? "Low Stock" : "In Stock"}</span></td><td><div class="table-actions"><button class="btn dark" onclick="openInventoryModal(${p.id})">Edit</button><button class="btn danger" onclick="deleteProduct(${p.id})">Delete</button></div></td></tr>`).join("")}</table>` : `<p class="muted">No items in this category.</p>`}</section>`;
+            })
+            .join(
+              "",
+            )}${!filtered.length ? `<p class="muted">No matching inventory items.</p>` : ""}</div>`;
+        },
+        menu: () => {
+          let search =
+            (document.getElementById("menuSearch") || {}).value || "";
+          let visible = data.products.filter((p) => p.visibleInMenu !== false);
+          let filtered = visible.filter(
+            (p) =>
+              !search ||
+              [p.name, p.category]
+                .join(" ")
+                .toLowerCase()
+                .includes(search.toLowerCase()),
+          );
+          return `<div class="panel"><div class="panel-head"><b>Menu</b><div class="actions">${session.role === "admin" ? `<button class="btn" onclick="openMenuModal()">Add Menu Item</button><button class="btn danger" onclick="deleteAllMenuItems()">Delete All Items</button><button class="btn dark" onclick="undoAllRemovedItems()">Undo All Removed Items</button>` : ""}</div></div><div style="margin-bottom:12px"><input id="menuSearch" value="${search}" oninput="go('menu',document.querySelector('[data-page=\"menu\"]'))" placeholder="Search menu..." /></div>${menuCategories
+            .map((category) => {
+              let items = filtered.filter((p) => p.category === category);
+              return `<section class="menu-category"><h3>${category}</h3>${items.length ? `<table><tr><th>Product</th><th>Price</th>${session.role === "admin" ? "<th>Actions</th>" : ""}</tr>${items.map((p) => `<tr><td>${p.name}</td><td>${money(p.price)}</td>${session.role === "admin" ? `<td><div class="table-actions"><button class="btn dark" onclick="openMenuModal(${p.id})">Edit</button><button class="btn danger" onclick="removeMenuItem(${p.id})">Remove</button></div></td>` : ""}</tr>`).join("")}</table>` : `<p class="muted">No items in this category.</p>`}</section>`;
+            })
+            .join("")}</div>`;
+        },
+        records: () => {
+          let sales = filteredSales();
+          return `<div class="cards"><div class="card"><div class="metric-label">TOTAL REVENUE</div><div class="metric">${money(totals(sales).revenue)}</div></div><div class="card"><div class="metric-label">TOTAL COST</div><div class="metric">${money(totals(sales).cost)}</div></div><div class="card"><div class="metric-label">TOTAL PROFIT</div><div class="metric good">${money(totals(sales).profit)}</div></div><div class="card"><div class="metric-label">TOTAL ORDERS</div><div class="metric">${sales.length}</div></div></div>
+ <div class="panel"><div class="panel-head"><b>${session.role === "admin" ? "All Sales Records" : "My Sales Records"}</b>${session.role === "admin" ? `<button class="btn dark" onclick="exportCSV()">Export CSV</button>` : ""}</div>${salesTable(sales.slice().reverse())}</div>`;
+        },
+        analytics:
+          () => `<div class="cards"><div class="card"><div class="metric-label">AVG. ORDER VALUE</div><div class="metric">${money(totals(filteredSales()).revenue / (totals(filteredSales()).orders || 1))}</div></div><div class="card"><div class="metric-label">PROFIT MARGIN</div><div class="metric">${((totals(filteredSales()).profit / (totals(filteredSales()).revenue || 1)) * 100).toFixed(1)}%</div></div><div class="card"><div class="metric-label">UNITS SOLD</div><div class="metric">${totals(filteredSales()).items}</div></div><div class="card"><div class="metric-label">LOW STOCK ITEMS</div><div class="metric">${data.products.filter((p) => p.stock <= 5).length}</div></div></div>
+ <div class="grid2"><div class="panel chart-card"><div class="panel-head"><b>Revenue vs Profit</b></div><div class="chart-wrap"><canvas id="salesChart"></canvas></div></div><div class="panel chart-card"><div class="panel-head"><b>Customer Flow by Hour</b></div><div class="chart-wrap"><canvas id="flowChart"></canvas></div></div></div>`,
+        staff: () =>
+          `<div class="panel"><div class="panel-head"><b>Staff Accounts</b><button class="btn" onclick="openStaffModal()">Add Staff</button></div><table><tr><th>Username</th><th>Role</th><th>Actions</th></tr>${data.staff.map(staffRow).join("")}</table></div>`,
+        calendar: () => {
+          let period = selectedCalendarView || "month";
+          let dateValue = selectedCalendarDate || today();
+          let displayDate = dateValue;
+          let dates = getCalendarPeriodDates(period, dateValue);
+          let rows = data.sales.filter((s) => dates.includes(s.date));
+          let total = summarizeSales(rows);
+          let note = (data.calendarNotes || {})[dateValue] || "";
+          let monthGrid =
+            period === "month"
+              ? calendarMonthGrid(dateValue)
+              : calendarDateList(period, dateValue);
+          return `<div class="panel"><div class="panel-head"><b>Digital Event Calendar</b><div class="actions">${["day", "week", "month", "year"].map((p) => `<button class="btn ${period === p ? "dark" : ""}" onclick="switchCalendarPeriod('${p}')">${p.toUpperCase()}</button>`).join("")}</div></div>
+  <div class="grid2"><div class="panel"><div class="panel-head"><b>${formatPeriodLabel(period, displayDate)}</b><div class="actions"><button class="btn dark" onclick="shiftCalendarMonth(-1)">Prev</button><button class="btn dark" onclick="shiftCalendarMonth(1)">Next</button></div></div>
+  <div class="cards" style="margin-bottom:15px">${calendarSummaryCards(total)}</div>
+  <div style="height:auto;max-height:520px;overflow:auto;padding-right:4px;">${monthGrid}</div></div>
+  <div class="panel"><div class="panel-head"><b>Notes for ${displayDate}</b></div>
+    <textarea id="calendarNote" rows="8" style="width:100%;resize:vertical;background:#090909;color:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;">${note}</textarea>
+    <div class="modal-actions" style="justify-content:flex-start;margin-top:12px"><button class="btn" onclick="saveCalendarNote()">Save Note</button></div>
+    <div class="muted" style="margin-top:12px">Selected period: ${period.toUpperCase()} • Total entries: ${rows.length}</div>
+  </div></div></div>`;
+        },
+      };
+      function staffRow(s) {
+        let action =
+          s.username !== "admin"
+            ? '<button class="btn danger" onclick="deleteStaff(' +
+              s.id +
+              ')">Delete</button>'
+            : '<span class="muted">Protected</span>';
+        return (
+          "<tr><td>" +
+          s.username +
+          "</td><td>" +
+          s.role +
+          "</td><td>" +
+          action +
+          "</td></tr>"
+        );
+      }
+      function summarizeSales(rows) {
+        let revenue = rows.reduce((a, s) => a + s.total, 0),
+          cost = rows.reduce((a, s) => a + s.cost, 0),
+          orders = rows.length,
+          items = rows.reduce((a, s) => a + s.qty, 0);
+        return { revenue, cost, profit: revenue - cost, orders, items };
+      }
+      function formatPeriodLabel(period, dateValue) {
+        const d = new Date(dateValue + "T00:00:00");
+        if (period === "day")
+          return d.toLocaleDateString("en-PH", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          });
+        if (period === "week") {
+          let start = getWeekStart(d);
+          let end = new Date(start);
+          end.setDate(start.getDate() + 6);
+          return `${start.toLocaleDateString("en-PH", { month: "short", day: "numeric" })} - ${end.toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" })}`;
+        }
+        if (period === "month")
+          return d.toLocaleDateString("en-PH", {
+            month: "long",
+            year: "numeric",
+          });
+        return d.toLocaleDateString("en-PH", { year: "numeric" });
+      }
+      function getWeekStart(date) {
+        let start = new Date(date);
+        let day = (start.getDay() + 6) % 7;
+        start.setDate(start.getDate() - day);
+        return start;
+      }
+      function getCalendarPeriodDates(period, dateValue) {
+        const d = new Date(dateValue + "T00:00:00");
+        let dates = [];
+        if (period === "day") {
+          dates = [dateValue];
+          return dates;
+        }
+        if (period === "week") {
+          let start = getWeekStart(d);
+          for (let i = 0; i < 7; i++) {
+            let day = new Date(start);
+            day.setDate(start.getDate() + i);
+            dates.push(day.toISOString().slice(0, 10));
+          }
+          return dates;
+        }
+        if (period === "month") {
+          let year = d.getFullYear();
+          let month = d.getMonth();
+          let lastDay = new Date(year, month + 1, 0).getDate();
+          for (let i = 1; i <= lastDay; i++) {
+            let dt = new Date(year, month, i);
+            dates.push(dt.toISOString().slice(0, 10));
+          }
+          return dates;
+        }
+        let year = d.getFullYear();
+        for (let m = 0; m < 12; m++) {
+          let dt = new Date(year, m, 1);
+          dates.push(dt.toISOString().slice(0, 10));
+        }
+        return dates;
+      }
+      function calendarSummaryCards(total) {
+        return `<div class="card"><div class="metric-label">REVENUE</div><div class="metric">${money(total.revenue)}</div></div><div class="card"><div class="metric-label">PROFIT</div><div class="metric good">${money(total.profit)}</div></div><div class="card"><div class="metric-label">ORDERS</div><div class="metric">${total.orders}</div></div><div class="card"><div class="metric-label">ITEMS</div><div class="metric">${total.items}</div></div>`;
+      }
+      function shiftCalendarMonth(offset) {
+        let d = new Date((selectedCalendarDate || today()) + "T00:00:00");
+        d.setMonth(d.getMonth() + offset);
+        selectedCalendarDate = d.toISOString().slice(0, 10);
+        go("calendar", document.querySelector('[data-page="calendar"]'));
+      }
+      function switchCalendarPeriod(period) {
+        selectedCalendarView = period;
+        selectedCalendarDate = selectedCalendarDate || today();
+        if (period === "day") {
+          const d = new Date((selectedCalendarDate || today()) + "T00:00:00");
+          selectedCalendarDate = d.toISOString().slice(0, 10);
+        }
+        go("calendar", document.querySelector('[data-page="calendar"]'));
+      }
+      function calendarMonthGrid(dateValue) {
+        const d = new Date(dateValue + "T00:00:00");
+        const year = d.getFullYear();
+        const month = d.getMonth();
+        const firstOfMonth = new Date(year, month, 1);
+        const lastOfMonth = new Date(year, month + 1, 0);
+        const startOffset = (firstOfMonth.getDay() + 6) % 7;
+        const daysInMonth = lastOfMonth.getDate();
+        const prevMonthDays = new Date(year, month, 0).getDate();
+        const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        let cells = [];
+        for (let i = 0; i < 42; i++) {
+          let dayNum = i - startOffset + 1;
+          let current = new Date(year, month, dayNum);
+          let cellDate = current.toISOString().slice(0, 10);
+          let isCurrentMonth = current.getMonth() === month;
+          let isSelected = cellDate === selectedCalendarDate;
+          let sales = data.sales.filter((s) => s.date === cellDate);
+          let total = summarizeSales(sales);
+          let note = (data.calendarNotes || {})[cellDate] || "";
+          let dayNumber = current.getDate();
+          let classes = [];
+          if (!isCurrentMonth) classes.push("muted");
+          if (isSelected) classes.push("selected");
+          cells.push(`<button type="button" class="calendar-day ${classes.join(" ")}" onclick="selectedCalendarDate='${cellDate}'; go('calendar',document.querySelector('[data-page=\"calendar\"]))" style="display:flex;flex-direction:column;justify-content:flex-start;align-items:flex-start;min-height:120px;padding:8px;border:1px solid var(--line);background:${isSelected ? "#1d1d1d" : "#121212"};border-radius:10px;color:#fff;text-align:left;cursor:pointer;">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:center;"><span style="font-weight:700;">${dayNumber}</span>${sales.length ? `<span class="badge">${sales.length}</span>` : ""}</div>
+      ${sales.length ? `<span style="margin-top:8px;font-size:11px;color:#c8f7d8;">${money(total.revenue)}</span>` : ``}
+      ${note ? `<span style="margin-top:4px;font-size:10px;color:#ddd;line-height:1.3;display:block;max-height:32px;overflow:hidden;">${note.slice(0, 30)}${note.length > 30 ? "..." : ""}</span>` : ``}
+    </button>`);
+        }
+        return `<div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;">
+    ${labels.map((label) => `<div style="text-align:center;color:#aaa;font-size:11px;padding-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;">${label}</div>`).join("")}
+    ${cells.join("")}
+  </div>`;
+      }
+      function calendarDateList(period, dateValue) {
+        const dates = getCalendarPeriodDates(period, dateValue);
+        let items = dates
+          .map((d) => {
+            let daySales = data.sales.filter((s) => s.date === d);
+            let totals = summarizeSales(daySales);
+            let active =
+              d === selectedCalendarDate
+                ? 'style="border-color:#fff;background:#1a1a1a;"'
+                : "";
+            return `<button class="card" ${active} onclick="selectedCalendarDate='${d}'; go('calendar',document.querySelector('[data-page=\"calendar\"]))" style="display:block;width:100%;text-align:left;border:1px solid var(--line);margin-bottom:10px;background:rgba(255,255,255,0.01);color:#fff;padding:12px;border-radius:10px;">
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;"><b>${new Date(d + "T00:00:00").toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" })}</b><span class="badge">${daySales.length} orders</span></div>
+    <div class="metric-label" style="margin-top:8px;">Revenue: ${money(totals.revenue)} • Profit: ${money(totals.profit)}</div>
+    <div class="muted" style="margin-top:4px;">${(data.calendarNotes || {})[d] ? `Note: ${(data.calendarNotes || {})[d].slice(0, 60)}${(data.calendarNotes || {})[d].length > 60 ? "..." : ""}` : "No note yet."}</div>
+  </button>`;
+          })
+          .join("");
+        return (
+          items || `<p class="muted">No sales recorded in this period.</p>`
+        );
+      }
+      function saveCalendarNote() {
+        let date = selectedCalendarDate || today();
+        let note = document.getElementById("calendarNote")?.value || "";
+        data.calendarNotes = data.calendarNotes || {};
+        data.calendarNotes[date] = note;
+        save();
+        go("calendar", document.querySelector('[data-page="calendar"]'));
+      }
+      function salesTable(rows) {
+        if (!rows.length) return `<p class="muted">No records yet.</p>`;
+        return `<table><tr><th>ID</th><th>Date</th><th>Time</th><th>Staff</th><th>Product</th><th>Qty</th><th>Payment</th><th>Revenue</th><th>Profit</th><th>Actions</th></tr>${rows.map((s) => `<tr><td>#${s.id}</td><td>${s.date}</td><td>${s.time}</td><td>${s.staff}</td><td>${s.product}</td><td>${s.qty}</td><td>${s.paymentMethod || "Cash"}</td><td>${money(s.total)}</td><td class="good">${money(s.total - s.cost)}</td><td><button class="btn danger" onclick="deleteSale(${s.id})">Delete</button></td></tr>`).join("")}</table>`;
+      }
+      function purchaseOrderTable(rows) {
+        if (!rows.length)
+          return `<p class="muted">No purchase orders recorded yet.</p>`;
+        return `<table><tr><th>ID</th><th>Product</th><th>Qty</th><th>Unit Cost</th><th>Total Cost</th><th>Staff</th><th>Date</th><th>Status</th><th>Actions</th></tr>${rows.map((po) => `<tr><td>#${po.id}</td><td>${po.product}</td><td>${po.quantity}</td><td>${money(po.unitCost)}</td><td>${money(po.totalCost)}</td><td>${po.staff}</td><td>${po.date}</td><td><select onchange="updatePurchaseOrderStatus(${po.id}, this.value)" style="background:#090909;color:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;">${purchaseOrderStatusOptions.map((status) => `<option value="${status}" ${po.status === status ? "selected" : ""}>${status}</option>`).join("")}</select></td><td><button class="btn danger" onclick="deletePurchaseOrder(${po.id})">Delete</button></td></tr>`).join("")}</table>`;
+      }
+      function addSale(e) {
+        e.preventDefault();
+        const productSelect = document.getElementById("saleProduct");
+        const qtyInput = document.getElementById("saleQty");
+        const orderInput = document.getElementById("orderId");
+        const paymentInput = document.getElementById("paymentMethod");
+        const productId = Number(productSelect?.value ?? 0);
+        const product = data.products.find((x) => x.id === productId);
+        const qty = Number(qtyInput?.value ?? 1);
+        const paymentMethodValue = paymentInput ? paymentInput.value : "Cash";
+        const orderIdValue = orderInput ? orderInput.value.trim() : "";
+
+        if (!product) return alert("Please select a valid product.");
+        if (!Number.isFinite(qty) || qty < 1)
+          return alert("Please enter a valid quantity.");
+        if (qty > product.stock) return alert("Not enough stock.");
+
+        let now = new Date();
+        data.sales.push({
+          id: Date.now(),
+          orderId: orderIdValue,
+          paymentMethod: paymentMethodValue,
+          date: today(),
+          time: now.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          staff: session.username,
+          product: product.name,
+          qty,
+          total: product.price * qty,
+          cost: product.cost * qty,
+        });
+        product.stock -= qty;
+        save();
+        closeModal();
+        alert("Purchase recorded.");
+        go("sales", document.querySelector('[data-page="sales"]'));
+      }
+      function addPurchaseOrder(e) {
+        e.preventDefault();
+        const productId = Number(
+          document.getElementById("poProduct")?.value ?? 0,
+        );
+        const product = data.products.find((item) => item.id === productId);
+        const qty = Number(document.getElementById("poQty")?.value ?? 1);
+        const status = document.getElementById("poStatus")?.value || "Pending";
+        if (!product) return alert("Please select a valid product.");
+        if (!Number.isFinite(qty) || qty < 1)
+          return alert("Please enter a valid quantity.");
+        const unitCost = Number(product.cost) || 0;
+        const totalCost = unitCost * qty;
+        const newOrder = {
+          id: Date.now(),
+          productId: product.id,
+          product: product.name,
+          quantity: qty,
+          unitCost,
+          totalCost,
+          staff: session.username,
+          date: document.getElementById("poDate")?.value || today(),
+          status,
+        };
+        data.purchaseOrders.push(newOrder);
+        if (status === "Received" || status === "Approved")
+          product.stock += qty;
+        save();
+        closeModal();
+        alert("Purchase order saved successfully.");
+        go(
+          "purchaseOrders",
+          document.querySelector('[data-page="purchaseOrders"]'),
+        );
+      }
+      function updatePurchaseOrderStatus(id, status) {
+        const purchaseOrder = data.purchaseOrders.find((po) => po.id === id);
+        if (!purchaseOrder) return;
+        const product = data.products.find(
+          (item) => item.id === purchaseOrder.productId,
+        );
+        if (product) {
+          const wasReceived = purchaseOrder.status === "Received";
+          const willBeReceived = status === "Received";
+          if (!wasReceived && willBeReceived)
+            product.stock += purchaseOrder.quantity;
+          if (wasReceived && !willBeReceived)
+            product.stock = Math.max(0, product.stock - purchaseOrder.quantity);
+        }
+        purchaseOrder.status = status;
+        save();
+        go(
+          "purchaseOrders",
+          document.querySelector('[data-page="purchaseOrders"]'),
+        );
+      }
+      function deletePurchaseOrder(id) {
+        const purchaseOrder = data.purchaseOrders.find((po) => po.id === id);
+        if (!purchaseOrder) return;
+        if (!confirm("Delete this purchase order?")) return;
+        const product = data.products.find(
+          (item) => item.id === purchaseOrder.productId,
+        );
+        if (product && purchaseOrder.status === "Received") {
+          product.stock = Math.max(0, product.stock - purchaseOrder.quantity);
+        }
+        data.purchaseOrders = data.purchaseOrders.filter((po) => po.id !== id);
+        save();
+        go(
+          "purchaseOrders",
+          document.querySelector('[data-page="purchaseOrders"]'),
+        );
+      }
+      function openModal(title, body) {
+        modalCard.innerHTML = `<div class="modal-head"><h2>${title}</h2><button class="icon-btn" onclick="closeModal()" aria-label="Close">&times;</button></div>${body}`;
+        modal.classList.remove("hidden");
+      }
+      function closeModal(e) {
+        if (!e || e.target === modal) modal.classList.add("hidden");
+      }
+      function openOrderModal() {
+        openModal(
+          "Add Order",
+          `<form onsubmit="addSale(event)" class="formgrid"><div><label>Product</label><select id="saleProduct" onchange="updateSelectedProductSummary(this)">${renderProductOptions()}</select><div class="product-preview" data-product-preview>Selected product will appear here.</div></div><div><label>Quantity</label><input id="saleQty" type="number" min="1" value="1" required></div><div><label>Staff on Duty</label><input value="${session.username}" readonly></div><div><label>Payment Method</label><select id="paymentMethod" required><option value="Cash">Cash</option><option value="GCash">GCash</option></select></div><div><label>Customer / Order ID</label><input id="orderId" placeholder="Optional"></div><div class="full modal-actions"><button type="button" class="btn dark" onclick="closeModal()">Cancel</button><button class="btn">Save Order</button></div></form>`,
+        );
+        setTimeout(() => {
+          const select = modalCard.querySelector("#saleProduct");
+          if (select) updateSelectedProductSummary(select);
+        }, 0);
+      }
+      function openPurchaseOrderModal() {
+        const defaultProduct =
+          getMenuProductsForSelection()[0] || data.products[0];
+        const defaultUnitCost = Number(
+          defaultProduct?.cost || defaultProduct?.price || 0,
+        );
+        openModal(
+          "Create Purchase Order",
+          `<form onsubmit="addPurchaseOrder(event)" class="formgrid"><div><label>Product</label><select id="poProduct" onchange="updateSelectedPurchaseOrderSummary(this)">${renderPurchaseOrderProductOptions()}</select></div><div><label>Quantity</label><input id="poQty" type="number" min="1" value="1" onchange="updateSelectedPurchaseOrderSummary(document.getElementById('poProduct'))"></div><div><label>Unit Cost</label><input id="poUnitCost" type="number" min="0" value="${defaultUnitCost}" readonly></div><div><label>Total Cost</label><input id="poTotalCost" type="number" min="0" value="${defaultUnitCost}" readonly></div><div><label>Managed By</label><input value="${session.username}" readonly></div><div><label>Date</label><input id="poDate" value="${today()}" readonly></div><div><label>Status</label><select id="poStatus">${purchaseOrderStatusOptions.map((status) => `<option value="${status}">${status}</option>`).join("")}</select></div><div class="full modal-actions"><button type="button" class="btn dark" onclick="closeModal()">Cancel</button><button class="btn">Save Purchase Order</button></div></form>`,
+        );
+        setTimeout(() => {
+          const select = modalCard.querySelector("#poProduct");
+          if (select) updateSelectedPurchaseOrderSummary(select);
+        }, 0);
+      }
+      function openInventoryModal(id) {
+        if (session.role !== "admin")
+          return alert("Staff cannot edit menu items.");
+        let p = data.products.find((x) => x.id === id) || {
+          name: "",
+          category: "Hot Coffee",
+          price: "",
+          cost: "",
+          stock: "",
+          visibleInMenu: true,
+          inventoryManaged: true,
+        };
+        openModal(
+          id ? "Edit Inventory" : "Add Inventory",
+          `<form onsubmit="saveProduct(event,${id || "null"})" class="formgrid"><div class="full"><label>Product name</label><input id="productName" value="${p.name}" required></div><div><label>Category</label><select id="productCategory">${menuCategories.map((category) => `<option value="${category}" ${p.category === category ? "selected" : ""}>${category}</option>`).join("")}</select></div><div><label>Selling price</label><input id="productPrice" type="number" min="0" value="${p.price}" required></div><div><label>Unit cost</label><input id="productCost" type="number" min="0" value="${p.cost}" required></div><div><label>Stock</label><input id="productStock" type="number" min="0" value="${p.stock}" required></div><div class="full modal-actions"><button type="button" class="btn dark" onclick="closeModal()">Cancel</button><button class="btn">Save Inventory</button></div></form>`,
+        );
+      }
+      function openMenuModal(id) {
+        if (session.role !== "admin")
+          return alert("Staff cannot edit menu items.");
+        let p = data.products.find((x) => x.id === id) || {
+          name: "",
+          category: "Hot Coffee",
+          price: "",
+          inventoryManaged: false,
+          visibleInMenu: true,
+        };
+        openModal(
+          id ? "Edit Menu Item" : "Add Menu Item",
+          `<form onsubmit="saveMenuItem(event,${id || "null"})" class="formgrid"><div class="full"><label>Product name</label><input id="menuName" value="${p.name}" required></div><div><label>Category</label><select id="menuCategory">${menuCategories.map((category) => `<option value="${category}" ${p.category === category ? "selected" : ""}>${category}</option>`).join("")}</select></div><div><label>Selling price</label><input id="menuPrice" type="number" min="0" value="${p.price}" required></div><div class="full modal-actions"><button type="button" class="btn dark" onclick="closeModal()">Cancel</button><button class="btn">Save Menu Item</button></div></form>`,
+        );
+      }
+      function saveProduct(e, id) {
+        e.preventDefault();
+        if (session.role !== "admin")
+          return alert("Staff cannot edit menu items.");
+        let product = id
+          ? data.products.find((p) => p.id === id)
+          : { id: Date.now() };
+        if (!product)
+          product = {
+            id: Date.now(),
+            visibleInMenu: true,
+            inventoryManaged: true,
+          };
+        Object.assign(product, {
+          name: productName.value.trim(),
+          category: productCategory.value,
+          price: +productPrice.value,
+          cost: +productCost.value,
+          stock: +productStock.value,
+          visibleInMenu: product.visibleInMenu !== false,
+          inventoryManaged: true,
+        });
+        if (!id) data.products.push(product);
+        save();
+        closeModal();
+        go("inventory", document.querySelector('[data-page="inventory"]'));
+      }
+      function saveMenuItem(e, id) {
+        e.preventDefault();
+        if (session.role !== "admin")
+          return alert("Staff cannot edit menu items.");
+        let product = id
+          ? data.products.find((p) => p.id === id)
+          : { id: Date.now() };
+        if (!product)
+          product = {
+            id: Date.now(),
+            inventoryManaged: false,
+            visibleInMenu: true,
+          };
+        Object.assign(product, {
+          name: menuName.value.trim(),
+          category: menuCategory.value,
+          price: +menuPrice.value,
+          inventoryManaged: false,
+          stock: 0,
+          cost: 0,
+          visibleInMenu: true,
+        });
+        if (!data.products.some((p) => p.id === product.id))
+          data.products.push(product);
+        save();
+        closeModal();
+        go("menu", document.querySelector('[data-page="menu"]'));
+      }
+      function removeMenuItem(id) {
+        if (session.role !== "admin")
+          return alert("Staff cannot edit menu items.");
+        if (!confirm("Delete this menu item permanently?")) return;
+        data.products = data.products.filter((p) => p.id !== id);
+        save();
+        go("menu", document.querySelector('[data-page="menu"]'));
+      }
+      function deleteAllMenuItems() {
+        if (session.role !== "admin")
+          return alert("Staff cannot edit menu items.");
+        if (!confirm("Delete all menu items permanently?")) return;
+        data.products = data.products.filter((p) => p.visibleInMenu === false);
+        save();
+        go("menu", document.querySelector('[data-page="menu"]'));
+      }
+      function undoAllRemovedItems() {
+        if (session.role !== "admin")
+          return alert("Staff cannot edit menu items.");
+        let restored = 0;
+        data.products.forEach((p) => {
+          if (p.visibleInMenu === false) {
+            p.visibleInMenu = true;
+            restored++;
+          }
+        });
+        save();
+        if (restored === 0) alert("No removed menu items to undo.");
+        go(
+          document.querySelector(".nav button.active")?.dataset.page || "menu",
+          document.querySelector(".nav button.active"),
+        );
+      }
+      function deleteProduct(id) {
+        if (session.role !== "admin")
+          return alert("Staff cannot edit menu items.");
+        if (!confirm("Delete this inventory item permanently?")) return;
+        data.products = data.products.filter((p) => p.id !== id);
+        save();
+        go("inventory", document.querySelector('[data-page="inventory"]'));
+      }
+      function deleteAllProducts() {
+        if (session.role !== "admin")
+          return alert("Staff cannot edit menu items.");
+        if (!confirm("Delete all inventory items permanently?")) return;
+        data.products = data.products.filter(
+          (p) => p.inventoryManaged === false,
+        );
+        save();
+        go("inventory", document.querySelector('[data-page="inventory"]'));
+      }
+      function deleteSale(id) {
+        if (!confirm("Delete this sale record?")) return;
+        let sale = data.sales.find((s) => s.id === id),
+          product = data.products.find((p) => p.name === sale.product);
+        if (product) product.stock += sale.qty;
+        data.sales = data.sales.filter((s) => s.id !== id);
+        save();
+        go("sales", document.querySelector('[data-page="sales"]'));
+      }
+      function openStaffModal() {
+        openModal(
+          "Add Staff",
+          `<form onsubmit="addStaff(event)"><label>Username</label><input id="staffName" required><label>Password</label><input id="staffPassword" type="password" required><label>Role</label><select id="staffRole"><option value="staff">Staff</option><option value="admin">Admin</option></select><div class="modal-actions"><button type="button" class="btn dark" onclick="closeModal()">Cancel</button><button class="btn">Add Staff</button></div></form>`,
+        );
+      }
+      function addStaff(e) {
+        e.preventDefault();
+        let name = staffName.value.trim();
+        if (data.staff.some((s) => s.username === name))
+          return alert("Username already exists.");
+        data.staff.push({
+          id: Date.now(),
+          username: name,
+          password: staffPassword.value,
+          role: staffRole.value,
+        });
+        save();
+        closeModal();
+        go("staff", document.querySelector('[data-page="staff"]'));
+      }
+      function deleteStaff(id) {
+        if (!confirm("Delete this staff account?")) return;
+        data.staff = data.staff.filter((s) => s.id !== id);
+        save();
+        go("staff", document.querySelector('[data-page="staff"]'));
+      }
+      function draw(page) {
+        setTimeout(() => {
+          const sales = filteredSales(),
+            days = [...Array(7)].map((_, i) => {
+              let d = new Date();
+              d.setDate(d.getDate() - (6 - i));
+              return d.toISOString().slice(0, 10);
+            });
+          const vals = days.map((d) =>
+            sales.filter((s) => s.date === d).reduce((a, s) => a + s.total, 0),
+          );
+          const profits = days.map((d) =>
+            sales
+              .filter((s) => s.date === d)
+              .reduce((a, s) => a + s.total - s.cost, 0),
+          );
+          const ctx = document.getElementById("salesChart");
+          if (ctx) {
+            if (chart1) chart1.destroy();
+            chart1 = new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: days.map((d) => d.slice(5)),
+                datasets: [
+                  { label: "Revenue", data: vals },
+                  { label: "Profit", data: profits },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: "#bbb" } } },
+                scales: {
+                  x: { ticks: { color: "#888" }, grid: { color: "#222" } },
+                  y: { ticks: { color: "#888" }, grid: { color: "#222" } },
+                },
+              },
+            });
+          }
+          const fc = document.getElementById("flowChart");
+          if (fc) {
+            let hours = [
+              "08",
+              "09",
+              "10",
+              "11",
+              "12",
+              "13",
+              "14",
+              "15",
+              "16",
+              "17",
+            ];
+            let hv = hours.map((h) =>
+              sales
+                .filter((s) => s.time.startsWith(h))
+                .reduce((a, s) => a + 1, 0),
+            );
+            if (chart2) chart2.destroy();
+            chart2 = new Chart(fc, {
+              type: "bar",
+              data: {
+                labels: hours.map((h) => h + ":00"),
+                datasets: [{ label: "Orders", data: hv }],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: "#bbb" } } },
+                scales: {
+                  x: { ticks: { color: "#888" }, grid: { color: "#222" } },
+                  y: {
+                    ticks: { color: "#888" },
+                    grid: { color: "#222" },
+                    beginAtZero: true,
+                  },
+                },
+              },
+            });
+          }
+        }, 50);
+      }
+      function exportCSV() {
+        let rows = [
+          [
+            "ID",
+            "Date",
+            "Time",
+            "Staff",
+            "Product",
+            "Qty",
+            "Revenue",
+            "Cost",
+            "Profit",
+          ],
+          ...data.sales.map((s) => [
+            s.id,
+            s.date,
+            s.time,
+            s.staff,
+            s.product,
+            s.qty,
+            s.total,
+            s.cost,
+            s.total - s.cost,
+          ]),
+        ];
+        let csv = rows.map((r) => r.join(",")).join("\\n");
+        let a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+        a.download = "serjes-cafe-sales.csv";
+        a.click();
+      }
+      const saved = localStorage.getItem("serjesSession");
+      initializeCalendarState();
+      if (saved) {
+        session = JSON.parse(saved);
+        showApp();
+      }
+    </script>
+  </body>
+</html>
